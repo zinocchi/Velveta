@@ -88,8 +88,9 @@
     }
   </style>
 </head>
+@extends('layout.layout')
 <body class="overflow-x-hidden">
-  <header class="fixed top-0 w-full bg-white shadow-md z-50 border-b border-gray-200">
+  {{-- <header class="fixed top-0 w-full bg-white shadow-md z-50 border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-20">
         <div class="flex items-center space-x-8">
@@ -97,9 +98,9 @@
             <img src="velveta.png" alt="Velveta Logo" class="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover transition-transform duration-300 hover:rotate-12">
           </div>
           <nav class="hidden md:flex space-x-8">
-            <a href="menu" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Menu</a>
-            <a href="about" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">About Us</a>
-            <a href="reward" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Reward</a>
+            <a href="{{ route('menu') }}" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Menu</a>
+            <a href="{{ route ('about') }}" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">About Us</a>
+            <a href="{{ route ('reward') }}" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Reward</a>
           </nav>
         </div>
         <div class="flex items-center space-x-4">
@@ -115,7 +116,7 @@
         </div>
       </div>
     </div>
-  </header>
+  </header> --}}
 
   <section class="mt-20 md:mt-24 relative overflow-hidden">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 rounded-xl overflow-hidden">

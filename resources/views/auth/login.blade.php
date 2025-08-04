@@ -46,9 +46,9 @@
       <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
         <p class="text-sm text-gray-500 mb-8">* indicates required field</p>
         
-        <form method="POST"space-y-6">
+        <form method="POST" action="{{ route('login') }}" class="space-y-6">
+          @csrf
           <div>
-            <label for="username" class="block text-sm font-medium mb-2 text-gray-700">* Username or email address</label>
             <input 
               type="text" 
               id="username" 
@@ -102,7 +102,7 @@
 
       <div class="text-center mt-8">
         <p class="text-gray-600">Don't have an account? 
-          <a href="#" class="text-velveta font-medium hover:text-red-800 transition duration-200">Register now</a>
+          <a href="{{ route ('register') }}" class="text-velveta font-medium hover:text-red-800 transition duration-200">Register now</a>
         </p>
       </div>
     </div>

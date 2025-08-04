@@ -86,8 +86,10 @@
             </svg>
             Find a store
           </a>
+          @guest
           <a href="{{ route('login') }}" class="px-4 py-2 border border-gray-800 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors duration-300">Sign in</a>
           <a href="{{ route('register') }}" class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-700 transition-colors duration-300">Join now</a>
+          @endguest
         </div>
       </div>
     </div>

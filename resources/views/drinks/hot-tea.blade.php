@@ -76,8 +76,8 @@
             </svg>
             Find a store
           </a>
-          <a href="login" class="px-4 py-2 border border-gray-800 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors duration-300">Sign in</a>
-          <a href="join" class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-700 transition-colors duration-300">Join now</a>
+          <a href="{{ route('login') }}" class="px-4 py-2 border border-gray-800 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors duration-300">Sign in</a>
+          <a href="{{ route('register') }}" class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-700 transition-colors duration-300">Join now</a>
         </div>
       </div>
     </div>
@@ -92,8 +92,8 @@
           <div class="mb-8">
             <h3 class="text-lg font-semibold text-gray-800 mb-3 font-montserrat">Drinks</h3>
             <ul class="space-y-2">
-              <li><a href="hot-coffee.html" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation ">Hot Coffee</a></li>
-              <li><a href="cold-coffe.html" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation ">Cold Coffee</a></li>
+              <li><a href="{{ route('drinks.hot-coffe') }}" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation ">Hot Coffee</a></li>
+              <li><a href="{{ route('drinks.cold-coffe') }}" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation ">Cold Coffee</a></li>
               <li><a href="hot-tea.html" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation active-category">Hot Tea</a></li>
               <li><a href="cold-tea.html" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation">Cold Tea</a></li>
               <li><a href="hot-chocolate.html" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation">Hot Chocolate & More</a></li>
@@ -114,7 +114,7 @@
 
       <div class="flex-1">
         <div class="flex items-center text-sm text-gray-600 mb-4 fade-in">
-          <a href="menu.html" class="hover:text-red-700 transition-colors duration-300">Menu</a>
+          <a href="{{ route('menu') }}" class="hover:text-red-700 transition-colors duration-300">Menu</a>
           <span class="mx-2">/</span>
           <span class="text-red-700"> Hot Tea</span>
         </div>

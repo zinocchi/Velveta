@@ -17,7 +17,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::prefix('food')->group(function () {
     Route::get('/breakfast', fn () => view('food.breakfast'))->name('food.breakfast');
