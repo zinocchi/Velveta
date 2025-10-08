@@ -62,10 +62,10 @@
             <img src="velveta.png" alt="Velveta Logo" class="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover transition-transform duration-300 hover:rotate-12">
           </div>
           <nav class="hidden md:flex space-x-8">
-            <a href="home" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Home</a>
-            <a href="menu" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Menu</a>
-            <a href="about" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">About Us</a>
-            <a href="reward" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Reward</a>
+            <a href="{{ route ('home') }}" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Home</a>
+            <a href="{{ route ('menu') }}" class="  text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Menu</a>
+            <a href="{{ route ('about') }}" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">About Us</a>
+            <a href="{{ route ('reward') }}" class="text-gray-900 hover:text-red-700 font-semibold uppercase text-sm tracking-wider transition-colors duration-300">Reward</a>
           </nav>
         </div>
         <div class="flex items-center space-x-4">
@@ -76,15 +76,15 @@
             </svg>
             Find a store
           </a>
-          <a href="login" class="px-4 py-2 border border-gray-800 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors duration-300">Sign in</a>
-          <a href="join" class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-700 transition-colors duration-300">Join now</a>
+          <a href="{{ ('login') }}" class="px-4 py-2 border border-gray-800 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors duration-300">Sign in</a>
+          <a href="{{ ('register') }}" class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-700 transition-colors duration-300">Join now</a>
         </div>
       </div>
     </div>
   </header>
 
   <main class="pt-28 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row">
+x    <div class="flex flex-col md:flex-row">
       <aside class="w-full md:w-64 flex-shrink-0 mb-8 md:mb-0 md:mr-8">
         <div class="bg-white rounded-xl shadow-sm p-6 sticky top-32">
           <h2 class="font-bold text-xl text-gray-900 mb-6 font-montserrat">Categories</h2>
@@ -92,7 +92,7 @@
           <div class="mb-8">
             <h3 class="text-lg font-semibold text-gray-800 mb-3 font-montserrat">Drinks</h3>
             <ul class="space-y-2">
-              <li><a href="hot-coffee" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation ">Hot Coffee</a></li>
+              <li><a href="hot-coffe" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation ">Hot Coffee</a></li>
               <li><a href="cold-coffe" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation active-category  ">Cold Coffee</a></li>
               <li><a href="hot-tea" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation">Hot Tea</a></li>
               <li><a href="cold-tea" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation">Cold Tea</a></li>

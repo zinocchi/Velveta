@@ -2,28 +2,23 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
 
 class RegisterController extends Controller
-{
-    use RegistersUsers;
-
-    protected $redirectTo = '/home';
-
-    public function __construct()
+{   
+    public function showRegister()
     {
-        $this->middleware('guest');
+        return view('auth.register'); 
     }
 
-    protected function validator(array $data)
+    public function register(Request $request)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255', 'regex:/^[\pL\s]+$/u'],
+        $validatedData = $request->validate([
+            'name' => ['required', 'string', 'max:255' ],
             'username' => ['required', 'string', 'max:20', 'unique:users', 'regex:/^[a-zA-Z0-9_]+$/'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => [
@@ -38,25 +33,16 @@ class RegisterController extends Controller
             'username.regex' => 'Username hanya boleh mengandung huruf, angka, dan underscore (_).',
             'password.regex' => 'Password harus mengandung minimal satu huruf besar, satu angka, dan satu simbol.',
         ]);
-    }
 
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => e($data['name']),
-            'username' => e($data['username']),
-            'email' => e($data['email']),
-            'password' => Hash::make($data['password']),
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'username' => $validatedData['username'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
         ]);
-    }
 
-    public function register(\Illuminate\Http\Request $request)
-    {
-        $this->validator($request->all())->validate();
+        Auth::login($user);
 
-        event(new Registered($user = $this->create($request->all())));
-
-        return $this->registered($request, $user)
-            ?: redirect($this->redirectPath())->with('status', 'Verifikasi email telah dikirim. Silakan cek email Anda.');
+        return redirect()->intended('/');
     }
 }

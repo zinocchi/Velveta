@@ -2,52 +2,47 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
-    use AuthenticatesUsers;
-
-    protected $maxAttempts = 5;
-    protected $decayMinutes = 1;
-
-    protected $redirectTo = '/home';
-
-    public function __construct()
+    public function showLoginForm()
     {
-        $this->middleware('guest')->except('logout');
+        return view('auth.login');
     }
 
-    protected function attemptLogin(Request $request)
+    public function login(Request $request)
     {
-        $credentials = $this->credentials($request);
+        $credentials = $request->validate([
+            'login' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        $loginType = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $loginType => $credentials['login'],
+            'password' => $credentials['password'],
+        ];
+
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended('/');
+        }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         
-        // Cek apakah input berupa email atau username
-        $field = filter_var($credentials[$this->username()], FILTER_VALIDATE_EMAIL) 
-            ? 'email' 
-            : 'username';
-            
-        return Auth::attempt([$field => $credentials[$this->username()], 'password' => $credentials['password']], $request->filled('remember'));
-    }
-
-    protected function credentials(Request $request)
-    {
-        return $request->only($this->username(), 'password');
-    }
-
-    protected function sendFailedLoginResponse(Request $request)
-    {
-        throw ValidationException::withMessages([
-            $this->username() => [trans('auth.failed')],
-        ])->errorBag('default')->redirectTo(route('login'));
-    }
-
-    public function username()
-    {
-        return 'login';
+        return redirect('/')->with('status', 'Berhasil logout.');
     }
 }

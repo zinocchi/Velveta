@@ -28,6 +28,21 @@
     .focus-ring-velveta:focus {
       --tw-ring-color: rgba(155, 17, 30, 0.2);
     }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6b7280;
+      font-size: 18px;
+      transition: color 0.2s;
+    }
+    .toggle-password:hover {
+      color: #9B111E;
+    }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -49,10 +64,11 @@
         <form method="POST" action="{{ route('login') }}" class="space-y-6">
           @csrf
           <div>
+            <label for="login" class="block text-sm font-medium mb-2 text-gray-700">* Username or Email</label>
             <input 
               type="text" 
               id="username" 
-              name="username" 
+              name="login" required 
               required 
               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
               placeholder="Enter your username or email"
@@ -67,9 +83,12 @@
                 id="password" 
                 name="password" 
                 required 
-                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
+                class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
                 placeholder="Enter your password"
               />
+              <button type="button" class="toggle-password" id="togglePassword">
+                👁️
+              </button>
             </div>
           </div>
 
@@ -111,5 +130,23 @@
   <footer class="text-center text-gray-500 text-sm pb-8">
     <p>© 2025 Velveta. All rights reserved.</p>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const passwordInput = document.getElementById('password');
+      const togglePasswordButton = document.getElementById('togglePassword');
+      
+      togglePasswordButton.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        if (type === 'password') {
+          togglePasswordButton.textContent = '👁️';
+        } else {
+          togglePasswordButton.textContent = '🔒';
+        }
+      });
+    });
+  </script>
 </body>
 </html>

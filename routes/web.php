@@ -2,22 +2,27 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ProfileController;
 
 
-Route::get('/', fn () => view('home'))->name('home');
+Route::get('/register', [RegisterController::class, 'showRegister'])->name('register.form');
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
+
 Route::get('/about', fn () => view('about'))->name('about');
 Route::get('/menu', fn () => view('menu'))->name('menu');
 Route::get('/reward', fn () => view('reward'))->name('reward');
-
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/', fn () => view('home'))->name('home');
 
 Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
 
 Route::prefix('food')->group(function () {
     Route::get('/breakfast', fn () => view('food.breakfast'))->name('food.breakfast');
@@ -35,6 +40,4 @@ Route::prefix('drinks')->group(function () {
 Route::prefix('desert')->group(function () {
     Route::get('/bakery', fn () => view('desert.bakery'))->name('desert.bakery');
     Route::get('/treats', fn () => view('desert.treats'))->name('desert.treats');
-
-
 });

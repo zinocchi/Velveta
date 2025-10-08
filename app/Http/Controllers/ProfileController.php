@@ -1,13 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use App\Models\User;
 
-class ProfilController extends Controller
+class ProfileController extends Controller
 {
     public function show()
     {
@@ -20,24 +19,31 @@ class ProfilController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|unique:users,username,' . $user->id,
+            'username' => 'required|string|max:20|unique:users,username,' . $user->id,
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user->name = $request->name;
+        try {
+            $updateData = [
+                'name' => $request->name,
+                'username' => $request->username,
+            ];
 
-        if ($request->hasFile('photo')) {
-            if ($user->photo) {
-                Storage::delete('public/' . $user->photo);
+            if ($request->hasFile('photo')) {
+
+                if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                    Storage::disk('public')->delete($user->photo);
+                }
+
+                $path = $request->file('photo')->store('profile_photos', 'public');
+                $updateData['photo'] = $path;
             }
 
-            $path = $request->file('photo')->store('profile_photos', 'public');
-            $user->photo = $path;
+            User::where('id', $user->id)->update($updateData);
+
+            return redirect()->back()->with('success', 'Profile updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update profile: ' . $e->getMessage());
         }
-
-        $user->save();
-
-        return redirect()->back()->with('success', 'Profile updated successfully.');
-
     }
 }

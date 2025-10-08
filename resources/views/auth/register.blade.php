@@ -48,10 +48,18 @@
       
       <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
         <p class="text-sm text-gray-500 mb-8">* indicates required field</p>
+
+        @if ($errors->any())
+           <div class="text-red-500">
+           <ul>
+             @foreach ($errors->all() as $error)
+                <li> {{ $error }} </li>
+             @endforeach
+           </ul>
+          </div>
+        @endif
         
 
-
-        
         <form method="POST" action="{{ route('register') }}" class="space-y-6">
           @csrf
           
@@ -107,7 +115,7 @@
                 <label for="password" class="block text-sm font-medium mb-2 text-gray-700">* Password</label>
                 <div class="relative">
                   <input 
-                    type="password" 
+                    type="password" required
                     id="password" 
                     name="password" 
                     required 
@@ -121,7 +129,7 @@
                 <label for="password_confirmation" class="block text-sm font-medium mb-2 text-gray-700">* Confirm Password</label>
                 <div class="relative">
                   <input 
-                    type="password" 
+                    type="password" required
                     id="password_confirmation" 
                     name="password_confirmation" 
                     required 
@@ -178,8 +186,7 @@
             </a>
             <button 
               type="submit" 
-              class="px-8 py-3 bg-velveta text-white font-medium rounded-full shadow-md hover-bg-velveta-dark focus:outline-none focus:ring-4 focus:ring-red-300 focus:ring-opacity-50 transition duration-300 text-base"
-            >
+              class="px-8 py-3 bg-velveta text-white font-medium rounded-full shadow-md hover-bg-velveta-dark focus:outline-none focus:ring-4 focus:ring-red-300 focus:ring-opacity-50 transition duration-300 text-base">
               Create Account
             </button>
           </div>
