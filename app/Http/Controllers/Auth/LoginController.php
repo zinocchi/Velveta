@@ -17,7 +17,7 @@ class LoginController extends Controller
     {
         $credentials = $request->validate([
             'login' => ['required', 'email'],
-            'password' => ['required'],
+            'password' => ['required'], 
         ]);
 
         $loginType = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
@@ -42,7 +42,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect('/')->with('status', 'Berhasil logout.');
     }
 }

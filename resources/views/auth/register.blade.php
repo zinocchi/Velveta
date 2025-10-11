@@ -39,13 +39,13 @@
       <img src="{{ asset('velveta.png') }}" alt="Logo" class="h-14">
     </div>
     <div class="nav-right flex gap-6 items-center">
-    </div>      
+    </div>
   </header>
 
   <main class="pt-32 pb-16 px-5 flex justify-center">
     <div class="w-full max-w-2xl">
       <h2 class="text-2xl font-bold text-center mb-10 montserrat text-gray-800">Create Your Account</h2>
-      
+
       <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
         <p class="text-sm text-gray-500 mb-8">* indicates required field</p>
 
@@ -58,81 +58,81 @@
            </ul>
           </div>
         @endif
-        
+
 
         <form method="POST" action="{{ route('register') }}" class="space-y-6">
           @csrf
-          
+
           <div class="pb-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold mb-6 text-gray-700 montserrat">Personal Information</h3>
-            
+
             <div>
               <label for="name" class="block text-sm font-medium mb-2 text-gray-700">* Full Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                required 
-                value="{{ old('name') }}"
+              <input
+                type="text"
+                id="fullname"
+                name="fullname"
+                required
+                value="{{ old('fullname') }}"
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
                 placeholder="Enter your full name"
               />
             </div>
-            
+
             <div class="mt-5">
               <label for="email" class="block text-sm font-medium mb-2 text-gray-700">* Email Address</label>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                required 
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
                 value="{{ old('email') }}"
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
                 placeholder="Enter your email address"
               />
             </div>
           </div>
-          
+
           <div class="pt-2 pb-4 border-b border-gray-200">
             <h3 class="text-lg font-semibold mb-6 text-gray-700 montserrat">Account Information</h3>
-            
+
             <div>
               <label for="username" class="block text-sm font-medium mb-2 text-gray-700">* Username</label>
-              <input 
-                type="text" 
-                id="username" 
-                name="username" 
-                required 
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
                 value="{{ old('username') }}"
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
                 placeholder="Choose a username"
               />
               <p class="text-xs text-gray-500 mt-1">Username must be 4-20 characters</p>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
               <div>
                 <label for="password" class="block text-sm font-medium mb-2 text-gray-700">* Password</label>
                 <div class="relative">
-                  <input 
+                  <input
                     type="password" required
-                    id="password" 
-                    name="password" 
-                    required 
+                    id="password"
+                    name="password"
+                    required
                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
                     placeholder="Create a password"
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label for="password_confirmation" class="block text-sm font-medium mb-2 text-gray-700">* Confirm Password</label>
                 <div class="relative">
-                  <input 
+                  <input
                     type="password" required
-                    id="password_confirmation" 
-                    name="password_confirmation" 
-                    required 
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    required
                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus-ring-velveta focus-border-velveta transition duration-200"
                     placeholder="Confirm your password"
                   />
@@ -141,15 +141,15 @@
             </div>
             <p class="text-xs text-gray-500 mt-2">Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.</p>
           </div>
-          
+
           <div class="pt-2">
             <h3 class="text-lg font-semibold mb-6 text-gray-700 montserrat">Preferences</h3>
-            
+
             <div class="flex items-start mb-4">
               <div class="flex items-center h-5">
-                <input 
-                  type="checkbox" 
-                  id="newsletter" 
+                <input
+                  type="checkbox"
+                  id="newsletter"
                   name="newsletter"
                   class="w-5 h-5 text-velveta rounded focus:ring-red-300 border-gray-300"
                   {{ old('newsletter', true) ? 'checked' : '' }}
@@ -160,12 +160,12 @@
                 <p class="text-gray-500">Get updates on new products, special offers, and more.</p>
               </div>
             </div>
-            
+
             <div class="flex items-start mt-6">
               <div class="flex items-center h-5">
-                <input 
-                  type="checkbox" 
-                  id="terms" 
+                <input
+                  type="checkbox"
+                  id="terms"
                   name="terms"
                   class="w-5 h-5 text-velveta rounded focus:ring-red-300 border-gray-300"
                   required
@@ -176,16 +176,16 @@
               </div>
             </div>
           </div>
-          
+
           <div class="pt-8 flex justify-end space-x-4">
-            <a 
-              href="login" 
+            <a
+              href="login"
               class="px-6 py-3 bg-white text-velveta font-medium rounded-full shadow-sm border border-velveta hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-red-300 focus:ring-opacity-50 transition duration-300"
             >
               Back to Login
             </a>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               class="px-8 py-3 bg-velveta text-white font-medium rounded-full shadow-md hover-bg-velveta-dark focus:outline-none focus:ring-4 focus:ring-red-300 focus:ring-opacity-50 transition duration-300 text-base">
               Create Account
             </button>
@@ -194,7 +194,7 @@
       </div>
 
       <div class="text-center mt-8">
-        <p class="text-gray-600">Already have an account? 
+        <p class="text-gray-600">Already have an account?
           <a href="login" class="text-velveta font-medium hover:text-red-800 transition duration-200">Sign in here</a>
         </p>
       </div>

@@ -18,9 +18,9 @@ Route::get('/reward', fn () => view('reward'))->name('reward');
 Route::get('/', fn () => view('home'))->name('home');
 
 Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::get('/profile/edit', [ProfileController::class, 'show'])->name('profile.edit');
 Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 
