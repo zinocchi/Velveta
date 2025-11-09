@@ -188,7 +188,7 @@
                 <img id="profileImage" src="{{ Storage::disk('public')->url(Auth::user()->photo) }}" alt="Profile" class="w-8 h-8 rounded-full profile-avatar object-cover">
               @else
                 <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold profile-avatar">
-                  {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                  {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
                 </div>
               @endif
               <span id="profileName" class="text-sm font-medium text-gray-900 hidden md:inline">{{ Auth::user()->name }}</span>
