@@ -16,7 +16,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/auth/redirect', function () {
     return Socialite::driver('google')->redirect();
-})->name('auth.redirect'); 
+})->name('auth.redirect');
 
 Route::get('/auth/callback', function () {
     $googleUser = Socialite::driver('google')->user();
