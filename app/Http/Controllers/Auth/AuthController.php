@@ -79,29 +79,55 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    // public function login(Request $request)
+    // {
+    //     $credentials = $request->validate([
+    //         'login' => ['required', 'email'],
+    //         'password' => ['required'],
+    //     ]);
+
+    //     $loginType = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+    //     $credentials = [
+    //         $loginType => $credentials['login'],
+    //         'password' => $credentials['password'],
+    //     ];
+
+    //     if (Auth::attempt($credentials, $request->filled('remember'))) {
+    //         $request->session()->regenerate();
+    //         return redirect()->intended('/');
+    //     }
+
+    //     return back()->withErrors([
+    //         'email' => 'Email atau password salah.',
+    //     ])->onlyInput('email');
+    // }
+
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'login' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+{
+    $request->validate([
+        'login' => 'required',
+        'password' => 'required'
+    ]);
 
-        $loginType = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+    $user = User::where('email', $request->login)
+        ->orWhere('username', $request->login)
+        ->first();
 
-        $credentials = [
-            $loginType => $credentials['login'],
-            'password' => $credentials['password'],
-        ];
-
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/');
-        }
-
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'message' => 'Invalid credentials'
+        ], 401);
     }
+
+    $token = $user->createToken('coffee-token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user
+    ]);
+}
+
 
     public function logout(Request $request)
     {
