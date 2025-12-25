@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
@@ -103,30 +103,6 @@ class AuthController extends Controller
     //     ])->onlyInput('email');
     // }
 
-    public function login(Request $request)
-{
-    $request->validate([
-        'login' => 'required',
-        'password' => 'required'
-    ]);
-
-    $user = User::where('email', $request->login)
-        ->orWhere('username', $request->login)
-        ->first();
-
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-        return response()->json([
-            'message' => 'Invalid credentials'
-        ], 401);
-    }
-
-    $token = $user->createToken('coffee-token')->plainTextToken;
-
-    return response()->json([
-        'token' => $token,
-        'user' => $user
-    ]);
-}
 
 
     public function logout(Request $request)

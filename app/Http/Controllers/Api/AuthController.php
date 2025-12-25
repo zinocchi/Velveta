@@ -1,34 +1,38 @@
-    <?php
+<?php
 
-    namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api;
 
-    use App\Http\Controllers\Controller;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Hash;
-    use App\Models\User;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
-    class AuthController extends Controller
+class AuthController extends Controller
+{
+    public function login(Request $request)
     {
-        public function login(Request $request)
-        {
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
 
-            $user = User::where('email', $request->email)->first();
+        $request->validate([
+            'login' => 'required',
+            'password' => 'required',
+        ]);
 
-            if (! $user || ! Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'message' => 'Invalid credentials'
-                ], 401);
-            }
+        $user = User::where('email', $request->login)
+            ->orWhere('username', $request->login)
+            ->first();
 
-            $token = $user->createToken('coffee-token')->plainTextToken;
-
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
-                'token' => $token,
-                'user' => $user
-            ]);
+                'message' => 'Invalid credentials'
+            ], 401);
         }
+
+        $token = $user->createToken('coffee-token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
     }
+}
+
