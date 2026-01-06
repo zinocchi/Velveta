@@ -89,8 +89,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row items-center gap-12">
         <div class="md:w-1/2 fade-in">
-          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-               alt="Coffee Shop Interior" 
+          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+               alt="Coffee Shop Interior"
                class="rounded-xl shadow-xl w-full h-auto">
         </div>
         <div class="md:w-1/2 fade-in">
@@ -111,7 +111,7 @@
         <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-playfair">Our Mission</h2>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">Creating unforgettable coffee experiences with the best quality</p>
       </div>
-      
+
       <div class="grid md:grid-cols-3 gap-8">
         <div class="bg-white p-8 rounded-xl shadow-md text-center fade-in">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -122,7 +122,7 @@
           <h3 class="text-xl font-bold text-gray-900 mb-2">Premium Quality</h3>
           <p class="text-gray-600">We only use selected coffee beans with perfect roasting process</p>
         </div>
-        
+
         <div class="bg-white p-8 rounded-xl shadow-md text-center fade-in" style="transition-delay: 0.2s">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,7 +132,7 @@
           <h3 class="text-xl font-bold text-gray-900 mb-2">Special Moments</h3>
           <p class="text-gray-600">Every cup is crafted to create special moments in your day</p>
         </div>
-        
+
         <div class="bg-white p-8 rounded-xl shadow-md text-center fade-in" style="transition-delay: 0.4s">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -152,11 +152,11 @@
         <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-playfair">Signature Products</h2>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">Our signature products that make Velveta Coffee special</p>
       </div>
-      
+
       <div class="space-y-12">
         <div class="flex flex-col md:flex-row items-center gap-8 bg-gray-50 p-6 rounded-xl fade-in">
-          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-               alt="Ballerinna Cappuccino" 
+          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+               alt="Ballerinna Cappuccino"
                class="w-full md:w-1/3 h-64 object-cover rounded-lg">
           <div class="md:w-2/3">
             <h3 class="text-2xl font-bold text-gray-900 mb-2">Ballerinna Cappuccino</h3>
@@ -167,10 +167,10 @@
             </div>
           </div>
         </div>
-        
+
         <div class="flex flex-col md:flex-row items-center gap-8 bg-gray-50 p-6 rounded-xl fade-in" style="transition-delay: 0.2s">
-          <img src="https://globalassets.starbucks.com/digitalassets/products/bev/IcedMatchaTeaLatte.jpg?impolicy=1by1_wide_topcrop_630" 
-               alt="Our Matcha" 
+          <img src="https://globalassets.starbucks.com/digitalassets/products/bev/IcedMatchaTeaLatte.jpg?impolicy=1by1_wide_topcrop_630"
+               alt="Our Matcha"
                class="w-full md:w-1/3 h-64 object-cover rounded-lg">
           <div class="md:w-2/3">
             <h3 class="text-2xl font-bold text-gray-900 mb-2">Our Matcha</h3>
@@ -180,10 +180,10 @@
             </div>
           </div>
         </div>
-        
+
         <div class="flex flex-col md:flex-row items-center gap-8 bg-gray-50 p-6 rounded-xl fade-in" style="transition-delay: 0.4s">
-          <img src="https://globalassets.starbucks.com/digitalassets/products/bev/IcedShakenEspresso.jpg?impolicy=1by1_wide_topcrop_630" 
-               alt="Americanno" 
+          <img src="https://globalassets.starbucks.com/digitalassets/products/bev/IcedShakenEspresso.jpg?impolicy=1by1_wide_topcrop_630"
+               alt="Americanno"
                class="w-full md:w-1/3 h-64 object-cover rounded-lg">
           <div class="md:w-2/3">
             <h3 class="text-2xl font-bold text-gray-900 mb-2">Americanno</h3>
@@ -203,41 +203,41 @@
         <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-playfair">Our Locations</h2>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">Find our coffee shops in various cities</p>
       </div>
-      
+
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <a href="https://maps.google.com" target="_blank" class="menu-item bg-white rounded-xl shadow-md overflow-hidden fade-in">
-          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-               alt="Jakarta Branch" 
+          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+               alt="Jakarta Branch"
                class="w-full h-48 object-cover">
           <div class="p-4">
             <h3 class="font-bold text-lg mb-1">Sunset Coffee - South Jakarta</h3>
             <p class="text-gray-600 text-sm">📍 Jl. Sudirman Kav. 52-53</p>
           </div>
         </a>
-        
+
         <a href="https://maps.google.com" target="_blank" class="menu-item bg-white rounded-xl shadow-md overflow-hidden fade-in" style="transition-delay: 0.1s">
-          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-               alt="Bandung Branch" 
+          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+               alt="Bandung Branch"
                class="w-full h-48 object-cover">
           <div class="p-4">
             <h3 class="font-bold text-lg mb-1">Sunset Coffee - Bandung</h3>
             <p class="text-gray-600 text-sm">📍 Jl. Riau No. 23</p>
           </div>
         </a>
-        
+
         <a href="https://maps.google.com" target="_blank" class="menu-item bg-white rounded-xl shadow-md overflow-hidden fade-in" style="transition-delay: 0.2s">
-          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-               alt="Yogyakarta Branch" 
+          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+               alt="Yogyakarta Branch"
                class="w-full h-48 object-cover">
           <div class="p-4">
             <h3 class="font-bold text-lg mb-1">Sunset Coffee - Yogyakarta</h3>
             <p class="text-gray-600 text-sm">📍 Jl. Malioboro No. 123</p>
           </div>
         </a>
-        
+
         <a href="https://maps.google.com" target="_blank" class="menu-item bg-white rounded-xl shadow-md overflow-hidden fade-in" style="transition-delay: 0.3s">
-          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-               alt="Surabaya Branch" 
+          <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+               alt="Surabaya Branch"
                class="w-full h-48 object-cover">
           <div class="p-4">
             <h3 class="font-bold text-lg mb-1">Sunset Coffee - Surabaya</h3>
@@ -300,7 +300,7 @@
     }, {
       threshold: 0.1
     });
-  
+
     document.querySelectorAll('.fade-in').forEach(el => {
       observer.observe(el);
     });

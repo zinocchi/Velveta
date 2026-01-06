@@ -99,7 +99,7 @@
       <aside class="w-full md:w-64 flex-shrink-0 mb-8 md:mb-0 md:mr-8">
         <div class="bg-white rounded-xl shadow-sm p-6 sticky top-32">
           <h2 class="font-bold text-xl text-gray-900 mb-6 font-montserrat">Categories</h2>
-          
+
           <div class="mb-8">
             <h3 class="text-lg font-semibold text-gray-800 mb-3 font-montserrat">Drinks</h3>
             <ul class="space-y-2">
@@ -110,7 +110,7 @@
               <li><a href="#hot-chocolate" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300">Hot Chocolate & More</a></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 class="text-lg font-semibold text-gray-800 mb-3 font-montserrat">Food</h3>
             <ul class="space-y-2">
@@ -135,8 +135,8 @@
             <a href="{{ route('drinks.hot-coffe') }}" id="hot-coffee" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/CaffeLatte.jpg" 
-                       alt="Hot Coffee" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/CaffeLatte.jpg"
+                       alt="Hot Coffee"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -148,8 +148,8 @@
             <a href="{{ route('drinks.cold-coffe') }}" id="cold-coffee" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/VanillaSweetCreamColdBrew.jpg" 
-                       alt="Cold Coffee" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/VanillaSweetCreamColdBrew.jpg"
+                       alt="Cold Coffee"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -161,8 +161,8 @@
             <a href="{{ route('drinks.hot-tea') }}" id="hot-tea" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/HoneyCitrusMintTea.jpg" 
-                       alt="Hot Tea" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/HoneyCitrusMintTea.jpg"
+                       alt="Hot Tea"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -174,8 +174,8 @@
             <a href="{{ route('drinks.cold-tea') }}" id="cold-tea" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/IcedBlackTea.jpg" 
-                       alt="Cold Tea" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/IcedBlackTea.jpg"
+                       alt="Cold Tea"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -184,13 +184,13 @@
               </div>
             </a>
 
-         
+
 
             <a href="{{ route ('drinks.hot-chocolate') }}" id="hot-chocolate" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/HotChocolate.jpg" 
-                       alt="Hot Chocolate" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/bev/HotChocolate.jpg"
+                       alt="Hot Chocolate"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -207,8 +207,8 @@
             <a href="{{ route('food.breakfast') }}" id="breakfast" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/EggPestoMozzarellaSandwich.jpg" 
-                       alt="Breakfast" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/EggPestoMozzarellaSandwich.jpg"
+                       alt="Breakfast"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -220,8 +220,8 @@
             <a href="{{ route('desert.bakery') }}" id="bakery" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20210915_Croissant-onGreen.jpg" 
-                       alt="Bakery" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20210915_Croissant-onGreen.jpg"
+                       alt="Bakery"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -233,8 +233,8 @@
             <a href="{{ route('desert.treats') }}" id="treats" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20181129_BirthdayCakePop.jpg" 
-                       alt="Treats" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20181129_BirthdayCakePop.jpg"
+                       alt="Treats"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -246,8 +246,8 @@
             <a href="{{ route('food.lunch') }}" id="lunch" class="menu-item group">
               <div class="bg-white rounded-xl shadow-sm overflow-hidden p-4 h-full flex flex-col">
                 <div class="relative overflow-hidden rounded-lg mb-4">
-                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20220207_GrilledCheeseOnSourdough_US.jpg" 
-                       alt="Lunch" 
+                  <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20220207_GrilledCheeseOnSourdough_US.jpg"
+                       alt="Lunch"
                        class="menu-img w-full h-40 object-cover rounded-lg">
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
@@ -266,7 +266,7 @@
         e.preventDefault();
         const targetId = this.getAttribute('href');
         const targetElement = document.querySelector(targetId);
-        
+
         if (targetElement) {
           window.scrollTo({
             top: targetElement.offsetTop - 120,
