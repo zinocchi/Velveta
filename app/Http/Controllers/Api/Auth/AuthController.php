@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+
 
 class AuthController extends Controller
 {
@@ -43,4 +44,29 @@ class AuthController extends Controller
             'message' => 'Logged out'
         ], 200);
     }
+
+    public function register(Request $request)
+{
+    $validated = $request->validate([
+        'fullname' => 'required|string|max:255',
+        'username' => 'required|string|max:50|unique:users,username',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:6',
+    ]);
+
+    $user = User::create([
+        'fullname' => $validated['fullname'],
+        'username' => $validated['username'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'role' => 'user',
+    ]);
+
+    $token = $user->createToken('auth-token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user,
+    ], 201);
+}
 }
