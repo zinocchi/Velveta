@@ -14,30 +14,41 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'login' => 'required',
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        // Ambil input login (bisa email atau username)
+        $login = $request->input('login');
+        $password = $request->input('password');
+
+        // Tentukan apakah user login pakai email atau username
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        // Coba login
+        if (!Auth::attempt([$field => $login, 'password' => $password])) {
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
         }
 
+        // Ambil user yang sudah tervalidasi
         $user = Auth::user();
+
         if (!$user) {
             return response()->json([
                 'message' => 'User not found'
             ], 404);
         }
+
+        // Bikin token sanctum
         $token = $user->createToken('velvetaToken')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'user' => $user,
+            'user'  => $user,
         ]);
     }
-
 
     public function logout(Request $request)
     {
