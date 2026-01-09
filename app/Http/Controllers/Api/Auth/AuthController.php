@@ -6,35 +6,38 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-
         $request->validate([
-            'login' => 'required',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->login)
-            ->orWhere('username', $request->login)
-            ->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
         }
 
-        $token = $user->createToken('coffee-token')->plainTextToken;
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+        $token = $user->createToken('velvetaToken')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'user' => $user
+            'user' => $user,
         ]);
     }
+
 
     public function logout(Request $request)
     {
@@ -46,27 +49,27 @@ class AuthController extends Controller
     }
 
     public function register(Request $request)
-{
-    $validated = $request->validate([
-        'fullname' => 'required|string|max:255',
-        'username' => 'required|string|max:50|unique:users,username',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6',
-    ]);
+    {
+        $validated = $request->validate([
+            'fullname' => 'required|string|max:255',
+            'username' => 'required|string|max:50|unique:users,username',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+        ]);
 
-    $user = User::create([
-        'fullname' => $validated['fullname'],
-        'username' => $validated['username'],
-        'email' => $validated['email'],
-        'password' => Hash::make($validated['password']),
-        'role' => 'user',
-    ]);
+        $user = User::create([
+            'fullname' => $validated['fullname'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'user',
+        ]);
 
-    $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $user->createToken('auth-token')->plainTextToken;
 
-    return response()->json([
-        'token' => $token,
-        'user' => $user,
-    ], 201);
-}
+        return response()->json([
+            'token' => $token,
+            'user' => $user,
+        ], 201);
+    }
 }
