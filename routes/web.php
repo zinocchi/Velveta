@@ -51,4 +51,3 @@ Route::prefix('desert')->group(function () {
     Route::get('/bakery', fn () => view('desert.bakery'))->name('desert.bakery');
     Route::get('/treats', fn () => view('desert.treats'))->name('desert.treats');
 });
- 

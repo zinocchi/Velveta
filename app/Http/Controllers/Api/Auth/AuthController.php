@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+
 
 
 class AuthController extends Controller
@@ -22,7 +24,7 @@ class AuthController extends Controller
         $login = $request->input('login');
         $password = $request->input('password');
 
-        // Tentukan apakah user login pakai email atau username
+        // Tentukan apakah user login p akai email atau username
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         // Coba login
@@ -82,5 +84,35 @@ class AuthController extends Controller
             'token' => $token,
             'user' => $user,
         ], 201);
+    }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        $googleUser = Socialite::driver('google')->user();
+
+        // cek user berdasarkan email
+        $user = User::where('email', $googleUser->email)->first();
+
+        // kalau belum ada, register otomatis
+        if (!$user) {
+            $user = User::create([
+                'fullname' => $googleUser->name ?? $googleUser->nickname,
+                'email' => $googleUser->email,
+                'google_id' => $googleUser->id,
+                'password' => bcrypt(uniqid()), // random password
+                'photo' => $googleUser->avatar, // kalau mau simpan foto
+            ]);
+        }
+
+        // bikin token sanctum
+        $token = $user->createToken('velvetaToken')->plainTextToken;
+
+        // redirect ke frontend react
+        return redirect("http://localhost:5173/auth/callback?token=$token&user=" . urlencode(json_encode($user)));
     }
 }
