@@ -2,9 +2,15 @@
 
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
+
+
+Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+
+// Route::get('/profile/edit', [ProfileController::class, 'show'])->name('profile.edit');
+// Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -12,20 +18,6 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-Route::get('/auth/redirect', function () {
-    return Socialite::driver('google')->redirect();
-})->name('auth.redirect');
-
-Route::get('/auth/callback', function () {
-    $googleUser = Socialite::driver('google')->user();
-    dd($googleUser);
-});
-
-
-Route::get('/profile/edit', [ProfileController::class, 'show'])->name('profile.edit');
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 Route::get('/about', fn () => view('about'))->name('about');
 Route::get('/menu', fn () => view('menu'))->name('menu');

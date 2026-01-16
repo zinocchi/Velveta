@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -95,24 +96,25 @@ class AuthController extends Controller
     {
         $googleUser = Socialite::driver('google')->user();
 
-        // cek user berdasarkan email
-        $user = User::where('email', $googleUser->email)->first();
-
-        // kalau belum ada, register otomatis
-        if (!$user) {
-            $user = User::create([
-                'fullname' => $googleUser->name ?? $googleUser->nickname,
-                'email' => $googleUser->email,
+        $user = User::updateOrCreate(
+            ['email' => $googleUser->email],
+            [
+                'fullname'  => $googleUser->name,
+                'username'  => explode('@', $googleUser->email)[0],
                 'google_id' => $googleUser->id,
-                'password' => bcrypt(uniqid()), // random password
-                'photo' => $googleUser->avatar, // kalau mau simpan foto
-            ]);
-        }
+                'avatar'    => $googleUser->avatar,
+                'password'  => bcrypt(Str::random(16)), 
+            ]
+        );
 
-        // bikin token sanctum
-        $token = $user->createToken('velvetaToken')->plainTextToken;
+        $token = $user->createToken('web')->plainTextToken;
 
-        // redirect ke frontend react
-        return redirect("http://localhost:5173/auth/callback?token=$token&user=" . urlencode(json_encode($user)));
+        return redirect("http://localhost:5173/auth/callback?token={$token}");
+    }
+    public function me(Request $request)
+    {
+        return response()->json([
+            'user' => $request->user(),
+        ]);
     }
 }

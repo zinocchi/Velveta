@@ -40,6 +40,11 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
+     'guzzle' => [
+        'timeout' => 30, 
+        'connect_timeout' => 10,
+        'verify' => true,
+    ],
 
 
 ];

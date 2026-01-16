@@ -11,19 +11,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
 
-            // data utama
             $table->string('fullname');
-            $table->string('username')->unique();
+            $table->string('username')->nullable();
             $table->string('email')->unique();
 
-            // password bisa nullable karena login Google tidak pakai password
+            // password boleh null kalau Google login
             $table->string('password')->nullable();
 
-            // kolom untuk login Google
             $table->string('google_id')->nullable();
             $table->string('avatar')->nullable();
 
-            // tambahan Laravel default
             $table->rememberToken();
             $table->timestamps();
         });
