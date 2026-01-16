@@ -167,7 +167,7 @@
                                     $userInitial = strtoupper(substr($userName, 0, 1));
                                 @endphp
 
-                                @if($userPhoto)
+                                @if ($userPhoto)
                                     <img src="{{ Storage::disk('public')->url($userPhoto) }}" alt="Profile Picture"
                                         class="w-10 h-10 rounded-full object-cover border-2 border-gray-200">
                                 @else
@@ -194,8 +194,8 @@
 
                                 <!-- LOGOUT FIXED -->
                                 <a href="{{ route('logout') }}"
-                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                                   class="block px-4 py-2 text-sm text-red-700 hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                    class="block px-4 py-2 text-sm text-red-700 hover:bg-gray-100 transition-colors duration-200 cursor-pointer">
                                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                 </a>
                             </div>
@@ -237,9 +237,9 @@
 
     <!-- Logout Form (Hidden) -->
     @auth
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-        @csrf
-    </form>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
     @endauth
 
     <script>
