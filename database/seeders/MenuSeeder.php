@@ -17,7 +17,7 @@ class MenuSeeder extends Seeder
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/bev/CaffeLatte.jpg',
                 'stock' => 100,
                 'description' => 'Rich espresso with steamed milk'
-            ],  
+            ],
             [
                 'name' => 'Lavender Oatmilk Latte',
                 'price' => 42000,
