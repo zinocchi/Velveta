@@ -242,6 +242,39 @@ class MenuSeeder extends Seeder
                 'stock' => 30,
                 'description' => ''
             ],
+
+            [
+                'name' => 'Egg, Pesto & Mozzarella Sandwich',
+                'price' => 80.000,
+                'category' => 'breakfast',
+                'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/EggPestoMozzarellaSandwich.jpg?impolicy=1by1_medium_630',
+                'stock' => 50,
+                'description' => 'Egg, pesto, and mozzarella sandwich on a ciabatta roll'
+            ],
+            [
+                'name' => 'Bacon, Sausage & Egg Wrap',
+                'price' => 65.000,
+                'category' => 'breakfast',
+                'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20191018_BaconSausageCageFreeEggWrap.jpg?impolicy=1by1_medium_630',
+                'stock' => 50,
+                'description' => 'Bacon, sausage, and egg wrap with a crispy texture'
+            ],
+            [
+                'name' => 'Avocado Spread',
+                'price' => 60.000,
+                'category' => 'breakfast',
+                'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20190814_AvocadoSpread.jpg?impolicy=1by1_medium_630',
+                'stock' => 50,
+                'description' => 'Creamy avocado spread on toasted bread'
+            ],
+            [
+                'name' => 'Bacon, Gouda & Egg Sandwich',
+                'price' => 70.000,
+                'category' => 'breakfast',
+                'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20210915_BaconGoudaEggSandwich.jpg?impolicy=1by1_medium_630',
+                'stock' => 50,
+                'description' => 'Bacon, gouda, and egg sandwich on a brioche bun'
+            ],
         ];
 
         foreach ($menu as $menu) {

@@ -27,7 +27,7 @@ Route::get('/dashboard', fn() => view('dashboard'))
     ->middleware('auth')
     ->name('dashboard');
 Route::prefix('food')->group(function () {
-    Route::get('/breakfast', fn() => view('food.breakfast'))->name('food.breakfast');
+    Route::get('/breakfast', fn() => view('food.breakfest'))->name('food.breakfast');
     Route::get('/lunch', fn() => view('food.lunch'))->name('food.lunch');
 });
 

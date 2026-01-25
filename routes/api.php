@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::prefix('menu')->group(function () {
     Route::get('/', [MenuController::class, 'index']);
-Route::get('/categories', [MenuController::class, 'categories']);
+    Route::get('/categories', [MenuController::class, 'categories']);
     Route::get('/{id}', [MenuController::class, 'show']);
+
+    Route::get('/category/{slug}', [MenuController::class, 'byCategory']);
 });

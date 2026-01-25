@@ -88,7 +88,7 @@
       <aside class="w-full md:w-64 flex-shrink-0 mb-8 md:mb-0 md:mr-8">
         <div class="bg-white rounded-xl shadow-sm p-6 sticky top-32">
           <h2 class="font-bold text-xl text-gray-900 mb-6 font-montserrat">Categories</h2>
-          
+
           <div class="mb-8">
             <h3 class="text-lg font-semibold text-gray-800 mb-3 font-montserrat">Drinks</h3>
             <ul class="space-y-2">
@@ -99,7 +99,7 @@
               <li><a href="hot-chocolate" class="sidebar-link text-gray-600 hover:text-red-700 block py-1 transition-colors duration-300 underline-animation ">Hot Chocolate & More</a></li>
             </ul>
           </div>
-          
+
           <div>
             <h3 class="text-lg font-semibold text-gray-800 mb-3 font-montserrat">Food</h3>
             <ul class="space-y-2">
@@ -118,7 +118,7 @@
           <span class="mx-2">/</span>
           <span class="text-red-700">Breakfast</span>
         </div>
-        
+
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 font-montserrat fade-in">Breakfast Menu</h1>
         <p class="text-gray-600 mb-8 fade-in">Comfort on a plate—breakfast made for slow mornings.</p>
 
@@ -126,8 +126,8 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="menu-item bg-white rounded-xl shadow-sm overflow-hidden">
               <div class="relative overflow-hidden rounded-t-xl aspect-square">
-                <img src="https://globalassets.starbucks.com/digitalassets/products/food/EggPestoMozzarellaSandwich.jpg?impolicy=1by1_medium_630" 
-                     alt="Caffè Latte" 
+                <img src="https://globalassets.starbucks.com/digitalassets/products/food/EggPestoMozzarellaSandwich.jpg?impolicy=1by1_medium_630"
+                     alt="Caffè Latte"
                      class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   <span class="text-white font-semibold">View Details</span>
@@ -144,11 +144,11 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="menu-item bg-white rounded-xl shadow-sm overflow-hidden">
               <div class="relative overflow-hidden rounded-t-xl aspect-square">
-                <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20191018_BaconSausageCageFreeEggWrap.jpg?impolicy=1by1_medium_630" 
-                     alt="Lavender Oatmilk Latte" 
+                <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20191018_BaconSausageCageFreeEggWrap.jpg?impolicy=1by1_medium_630"
+                     alt="Lavender Oatmilk Latte"
                      class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   <span class="text-white font-semibold">View Details</span>
@@ -165,11 +165,11 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="menu-item bg-white rounded-xl shadow-sm overflow-hidden">
               <div class="relative overflow-hidden rounded-t-xl aspect-square">
-                <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20190814_AvocadoSpread.jpg?impolicy=1by1_medium_630" 
-                     alt="Cinnamon Dolce Latte" 
+                <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20190814_AvocadoSpread.jpg?impolicy=1by1_medium_630"
+                     alt="Cinnamon Dolce Latte"
                      class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   <span class="text-white font-semibold">View Details</span>
@@ -186,11 +186,11 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="menu-item bg-white rounded-xl shadow-sm overflow-hidden">
               <div class="relative overflow-hidden rounded-t-xl aspect-square">
-                <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20210915_BaconGoudaEggSandwich.jpg?impolicy=1by1_medium_630" 
-                     alt="Pistachio Latte" 
+                <img src="https://globalassets.starbucks.com/digitalassets/products/food/SBX20210915_BaconGoudaEggSandwich.jpg?impolicy=1by1_medium_630"
+                     alt="Pistachio Latte"
                      class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   <span class="text-white font-semibold">View Details</span>
@@ -210,7 +210,7 @@
           </div>
         </section>
 
-      
+
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -218,11 +218,11 @@
         button.addEventListener('click', function(e) {
           e.preventDefault();
           const originalText = this.textContent;
-          
+
           this.textContent = 'Added!';
           this.classList.remove('bg-red-700');
           this.classList.add('bg-green-600');
-          
+
           setTimeout(() => {
             this.textContent = originalText;
             this.classList.remove('bg-green-600');
@@ -240,7 +240,7 @@
       }, {
         threshold: 0.1
       });
-    
+
       document.querySelectorAll('.fade-in').forEach((el, index) => {
         el.style.transitionDelay = `${index * 0.1}s`;
         observer.observe(el);
@@ -255,4 +255,4 @@
     });
   </script>
 </body>
-</html> 
+</html>
