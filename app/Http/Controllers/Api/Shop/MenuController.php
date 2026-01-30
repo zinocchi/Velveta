@@ -35,9 +35,8 @@ class MenuController extends Controller
                 'message' => 'Menu retrieved successfully',
                 'data' => $menu
             ], 200);
-
         } catch (\Exception $e) {
-        return response()->json([
+            return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve menus',
                 'error' => $e->getMessage()
@@ -68,7 +67,6 @@ class MenuController extends Controller
                 'message' => 'Menu retrieved successfully',
                 'data' => $menu
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -97,7 +95,6 @@ class MenuController extends Controller
                 'message' => 'Categories retrieved successfully',
                 'data' => $categories
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -112,6 +109,5 @@ class MenuController extends Controller
         $menu = Menu::where('category', $slug)->get();
 
         return response()->json($menu);
-
     }
 }

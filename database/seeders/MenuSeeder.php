@@ -173,7 +173,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Chocolate Pop',
                 'price' => 20000,
-                'category' => 'treat',
+                'category' => 'treats',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20181129_ChocolateCakePop.jpg?impolicy=1by1_medium_630',
                 'stock' => 100,
                 'description' => ''
@@ -181,7 +181,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Cookie & Cream Cake Pop',
                 'price' => 35000,
-                'category' => 'treat',
+                'category' => 'treats',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20220125_CookiesAndCreamCakePop.jpg?impolicy=1by1_medium_630',
                 'stock' => 70,
                 'description' => ''
@@ -189,7 +189,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Chocolate Chip Cookie',
                 'price' => 30000,
-                'category' => 'treat',
+                'category' => 'treats',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20190129_ChocolateChipCookie.jpg?impolicy=1by1_medium_630',
                 'stock' => 50,
                 'description' => ''
@@ -197,7 +197,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Double Chocolate Brownie',
                 'price' => 40000,
-                'category' => 'treat',
+                'category' => 'treats',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20190715_DoubleChocolateChunkBrownie.jpg?impolicy=1by1_medium_630',
                 'stock' => 50,
                 'description' => ''
@@ -245,7 +245,7 @@ class MenuSeeder extends Seeder
 
             [
                 'name' => 'Egg, Pesto & Mozzarella Sandwich',
-                'price' => 80.000,
+                'price' => 80000,
                 'category' => 'breakfast',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/EggPestoMozzarellaSandwich.jpg?impolicy=1by1_medium_630',
                 'stock' => 50,
@@ -253,7 +253,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 'name' => 'Bacon, Sausage & Egg Wrap',
-                'price' => 65.000,
+                'price' => 65000,
                 'category' => 'breakfast',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20191018_BaconSausageCageFreeEggWrap.jpg?impolicy=1by1_medium_630',
                 'stock' => 50,
@@ -261,7 +261,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 'name' => 'Avocado Spread',
-                'price' => 60.000,
+                'price' => 60000,
                 'category' => 'breakfast',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20190814_AvocadoSpread.jpg?impolicy=1by1_medium_630',
                 'stock' => 50,
@@ -269,12 +269,20 @@ class MenuSeeder extends Seeder
             ],
             [
                 'name' => 'Bacon, Gouda & Egg Sandwich',
-                'price' => 70.000,
+                'price' => 70000,
                 'category' => 'breakfast',
                 'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/food/SBX20210915_BaconGoudaEggSandwich.jpg?impolicy=1by1_medium_630',
                 'stock' => 50,
                 'description' => 'Bacon, gouda, and egg sandwich on a brioche bun'
             ],
+            [
+                'name' => 'Hot Chocolate',
+                'price' => 30000,
+                'category' => 'hot_chocolate',
+                'image_url' => 'https://globalassets.starbucks.com/digitalassets/products/bev/HotChocolate.jpg?impolicy=1by1_wide_topcrop_630',
+                'stock' => 150,
+                'description' => 'Rich and creamy hot chocolate'
+            ]
         ];
 
         foreach ($menu as $menu) {

@@ -103,7 +103,7 @@ class AuthController extends Controller
                 'username'  => explode('@', $googleUser->email)[0],
                 'google_id' => $googleUser->id,
                 'avatar'    => $googleUser->avatar,
-                'password'  => bcrypt(Str::random(16)), 
+                'password'  => bcrypt(Str::random(16)),
             ]
         );
 
