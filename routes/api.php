@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Shop\MenuController;
+use App\Http\Controllers\Api\Shop\OrderController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -25,3 +26,5 @@ Route::prefix('menu')->group(function () {
 
     Route::get('/category/{slug}', [MenuController::class, 'byCategory']);
 });
+
+Route::middleware('auth:sanctum')->post('/checkout', [OrderController::class, 'checkout']);
