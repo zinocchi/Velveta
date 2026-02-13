@@ -18,11 +18,11 @@ class MenuController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            // Get query parameters
+
             $category = $request->query('category');
             $search = $request->query('search');
 
-            // Build query with scopes
+            
             $menu = Menu::query()
                 ->search($search)
                 ->byCategory($category)

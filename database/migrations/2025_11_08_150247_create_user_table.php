@@ -15,9 +15,7 @@ return new class extends Migration
             $table->string('username')->nullable();
             $table->string('email')->unique();
 
-            // password boleh null kalau Google login
             $table->string('password')->nullable();
-
             $table->string('google_id')->nullable();
             $table->string('avatar')->nullable();
 

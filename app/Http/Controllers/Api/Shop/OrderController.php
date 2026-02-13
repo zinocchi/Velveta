@@ -11,10 +11,22 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    public function checkout(Request $request)
+
+    public function index(Request $request)
+    {
+        return response()->json(
+            $request->user()->orders()
+                ->with('items.menu')
+                ->latest()
+                ->get()
+        );
+    }
+
+
+    public function store(Request $request)
     {
         $request->validate([
-            'items' => 'required|array',
+            'items' => 'required|array|min:1',
             'items.*.id' => 'required|exists:menus,id',
             'items.*.qty' => 'required|integer|min:1',
             'payment_method' => 'required|string'
@@ -31,12 +43,10 @@ class OrderController extends Controller
             }
 
             $order = Order::create([
-                'user_id' => auth()->id(),
+                'user_id' => $request->user()->id,
                 'total_price' => $total,
                 'payment_method' => $request->payment_method,
-                'status' => 'preparing',
-                'estimated_minutes' => rand(5, 15),
-                'paid_at' => now(),
+                'status' => 'pending',
             ]);
 
             foreach ($request->items as $item) {
@@ -53,12 +63,32 @@ class OrderController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'Payment success',
-                'order_id' => $order->id,
-            ]);
-        } catch (\Exception $e) {
+                'message' => 'Order created',
+                'order_id' => $order->id
+            ], 201);
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
+
+            return response()->json([
+                'error' => 'Failed to create order',
+                'detail' => $e->getMessage()
+            ], 500);
         }
+    }
+
+    public function pay(Request $request, Order $order)
+    {
+        abort_if($order->user_id !== $request->user()->id, 403);
+        abort_if($order->status !== 'pending', 400, 'Order already paid');
+
+        $order->update([
+            'status' => 'preparing',
+            'paid_at' => now(),
+            'estimated_minutes' => rand(5, 15),
+        ]);
+
+        return response()->json([
+            'message' => 'Payment success'
+        ]);
     }
 }

@@ -10,11 +10,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/me', function (Request $request) {
-        return response()->json([
-            'user' => $request->user()
-        ]);
-    });
+    Route::get('/me', fn(Request $request) => response()->json([
+        'user' => $request->user()
+    ]));
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });
@@ -22,9 +20,17 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('menu')->group(function () {
     Route::get('/', [MenuController::class, 'index']);
     Route::get('/categories', [MenuController::class, 'categories']);
-    Route::get('/{id}', [MenuController::class, 'show']);
-
     Route::get('/category/{slug}', [MenuController::class, 'byCategory']);
+    Route::get('/{id}', [MenuController::class, 'show']);
 });
 
-Route::middleware('auth:sanctum')->post('/checkout', [OrderController::class, 'checkout']);
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/orders', [OrderController::class, 'store']);
+
+
+    Route::post('/orders/{order}/pay', [OrderController::class, 'pay']);
+
+
+    Route::get('/orders', [OrderController::class, 'index']);
+});
