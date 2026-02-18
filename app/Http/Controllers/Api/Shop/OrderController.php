@@ -91,4 +91,48 @@ class OrderController extends Controller
             'message' => 'Payment success'
         ]);
     }
+
+    public function myOrder()
+    {
+        $orders = Order::with('items.menu')
+            ->where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($orders);
+    }
+
+    public function show($id)
+    {
+        $order = Order::with('items.menu')
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        return response()->json($order);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:PENDING,PROCESSING,COMPLATED,CANCELLED'
+        ]);
+
+        $order = Order::findOrFail($id);
+        $order->status = $request->status;
+        $order->save();
+
+        return response()->json([
+            'message' => 'Order status updated',
+            'order' => $order
+        ]);
+    }
+
+    public function handle($request, Clousure $next)
+    {
+        if (auth()->user()->role !== 'admin') {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+        return $next($request);
+    }
 }

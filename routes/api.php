@@ -27,10 +27,12 @@ Route::prefix('menu')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/orders', [OrderController::class, 'store']);
-
-
     Route::post('/orders/{order}/pay', [OrderController::class, 'pay']);
-
-
     Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/my', [OrderController::class, 'MyOrders']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
 });
+
+Route::middleware(['auth:sanctum', 'admin'])
+  ->patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
