@@ -26,13 +26,15 @@ Route::prefix('menu')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::post('/orders', [OrderController::class, 'store']);
-    Route::post('/orders/{order}/pay', [OrderController::class, 'pay']);
-    Route::get('/orders', [OrderController::class, 'index']);
-    Route::get('/orders/my', [OrderController::class, 'MyOrders']);
-    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::prefix('orders')->group(function () {
+        Route::post('/', [OrderController::class, 'store']);
+        Route::get('/', [OrderController::class, 'index']);
+        Route::get('/my', [OrderController::class, 'myOrder']);
+        Route::get('/{id}', [OrderController::class, 'show']);
+        Route::post('/{order}/pay', [OrderController::class, 'pay']);
+    });
+
+    Route::middleware(['admin'])->group(function () {
+        Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+    });
 });
-
-Route::middleware(['auth:sanctum', 'admin'])
-  ->patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
-

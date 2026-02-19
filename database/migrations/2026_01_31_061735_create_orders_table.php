@@ -1,4 +1,5 @@
 <?php
+// database/migrations/[timestamp]_create_orders_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -6,30 +7,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('status', [
-                'PENDING',
-                'PROCESSING',
-                'COMPLETED',
-                'CANCELLED'
-            ])->default('PENDING')->after('total');
+            $table->decimal('total_price', 10, 2);
+            $table->enum('status', ['PENDING', 'PROCESSING', 'COMPLETED', 'CANCELLED'])->default('PENDING');
             $table->string('payment_method');
-            $table->integer('estimated_minutes')->default(10);
+            $table->enum('delivery_type', ['delivery', 'pickup']);
+            $table->decimal('shipping_cost', 10, 2)->default(0);
+            $table->json('shipping_address')->nullable();
+            $table->json('delivery_option')->nullable();
+            $table->integer('estimated_minutes')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('orders');
