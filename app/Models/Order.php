@@ -18,7 +18,8 @@ class Order extends Model
         'shipping_address',
         'delivery_option',
         'estimated_minutes',
-        'paid_at'
+        'paid_at',
+        'order_number'
     ];
 
     protected $casts = [

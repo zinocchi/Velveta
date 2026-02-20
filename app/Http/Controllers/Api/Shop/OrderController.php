@@ -34,14 +34,23 @@ class OrderController extends Controller
         }
     }
 
+    private function generateOrderNumber()
+    {
+        do {
+            $number = str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
+        } while (
+            \App\Models\Order::where('order_number', $number)->exists()
+        );
+
+        return $number;
+    }
+
     public function store(Request $request)
     {
-        // LOG SEMUA DATA YANG MASUK
         Log::info('=== ORDER CREATION STARTED ===');
         Log::info('Request data:', $request->all());
         Log::info('Request user:', ['user_id' => $request->user()?->id]);
 
-        // Validasi dasar untuk semua tipe pengiriman
         $rules = [
             'items' => 'required|array|min:1',
             'items.*.id' => 'required|exists:menus,id',
@@ -52,29 +61,25 @@ class OrderController extends Controller
             'total' => 'required|numeric|min:0',
         ];
 
-        // Validasi khusus untuk delivery
         if ($request->delivery_type === 'delivery') {
             Log::info('Validating for delivery type');
             $rules['shipping_address'] = 'required|array';
 
-            // Cek apakah shipping_address ada
             if ($request->has('shipping_address') && is_array($request->shipping_address)) {
                 Log::info('Shipping address keys:', array_keys($request->shipping_address));
             }
         } else {
             Log::info('Validating for pickup type');
-            // Untuk pickup, shipping_address tidak diperlukan
+
             $rules['shipping_address'] = 'nullable';
         }
 
-        // Validasi delivery_option jika ada
         if ($request->has('delivery_option') && $request->delivery_option) {
             Log::info('Has delivery option');
             $rules['delivery_option'] = 'nullable|array';
         }
 
         try {
-            // Validasi request
             $validatedData = $request->validate($rules);
             Log::info('Validation passed');
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -89,7 +94,6 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
-            // Hitung ulang total dari items untuk keamanan
             $calculatedItemsTotal = 0;
             $itemsDetail = [];
 
@@ -115,7 +119,6 @@ class OrderController extends Controller
                 ];
             }
 
-            // Hitung final total
             $finalTotal = $calculatedItemsTotal + $request->shipping_cost;
             Log::info('Calculated totals:', [
                 'items_total' => $calculatedItemsTotal,
@@ -124,14 +127,13 @@ class OrderController extends Controller
                 'client_total' => $request->total
             ]);
 
-            // Verifikasi total dari client (untuk keamanan)
             if (abs($finalTotal - $request->total) > 0.01) {
                 throw new \Exception('Total price mismatch. Please refresh your cart.');
             }
 
-            // Siapkan data order
             $orderData = [
                 'user_id' => $request->user()->id,
+                'order_number' => $this->generateOrderNumber(),
                 'total_price' => $finalTotal,
                 'status' => 'PENDING',
                 'payment_method' => $request->payment_method,
@@ -139,7 +141,6 @@ class OrderController extends Controller
                 'shipping_cost' => $request->shipping_cost,
             ];
 
-            // Handle shipping address untuk delivery
             if ($request->delivery_type === 'delivery' && $request->has('shipping_address') && $request->shipping_address) {
                 Log::info('Processing shipping address');
                 $orderData['shipping_address'] = [
@@ -153,11 +154,9 @@ class OrderController extends Controller
                     'full_address' => $request->shipping_address['full_address'] ?? null,
                 ];
 
-                // Set estimated minutes untuk delivery
                 $orderData['estimated_minutes'] = 45; // default delivery time
             }
 
-            // Handle delivery option
             if ($request->has('delivery_option') && $request->delivery_option) {
                 Log::info('Processing delivery option');
                 $orderData['delivery_option'] = [
@@ -167,9 +166,8 @@ class OrderController extends Controller
                 ];
             }
 
-            // Untuk pickup, set estimated minutes
             if ($request->delivery_type === 'pickup') {
-                $orderData['estimated_minutes'] = 15; // default pickup time
+                $orderData['estimated_minutes'] = 15;
             }
 
             Log::info('Order data to be created:', $orderData);
@@ -203,6 +201,7 @@ class OrderController extends Controller
                 'success' => true,
                 'message' => 'Order created successfully',
                 'order_id' => $order->id,
+                'order_number' => $order->order_number,
                 'data' => [
                     'order_id' => $order->id,
                     'status' => $order->status,
@@ -278,4 +277,21 @@ class OrderController extends Controller
 
         return $next($request);
     }
+
+    public function myOrder ()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $orders = Order::with('items.menu')
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($orders);
+    }
 }
+    

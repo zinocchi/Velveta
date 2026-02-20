@@ -20,6 +20,7 @@ return new class extends Migration
             $table->json('shipping_address')->nullable();
             $table->json('delivery_option')->nullable();
             $table->integer('estimated_minutes')->nullable();
+            $table->string('order_number', 10)->unique();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });
