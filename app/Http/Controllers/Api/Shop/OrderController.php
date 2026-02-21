@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Closure;
+use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
 class OrderController extends Controller
 {
@@ -278,7 +280,7 @@ class OrderController extends Controller
         return $next($request);
     }
 
-    public function myOrder ()
+    public function myOrder()
     {
         $user = auth()->user();
 
@@ -293,5 +295,47 @@ class OrderController extends Controller
 
         return response()->json($orders);
     }
+
+    public function show($id)
+    {
+        try {
+            $user = FacadesAuth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
+
+            $order = Order::with(['items.menu'])
+                ->where('id', $id)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order not found'
+                ], 404);
+            }
+
+            if ($order->user_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $order
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch order',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
-    
