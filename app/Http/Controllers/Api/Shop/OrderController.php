@@ -174,11 +174,9 @@ class OrderController extends Controller
 
             Log::info('Order data to be created:', $orderData);
 
-            // Create order
             $order = Order::create($orderData);
             Log::info('Order created with ID: ' . $order->id);
 
-            // Create order items
             foreach ($request->items as $item) {
                 $menu = Menu::findOrFail($item['id']);
 

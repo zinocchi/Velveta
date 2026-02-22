@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('price');
-            $table->string('category')->nullable(); // coffee, noncoffee, snack, dll
+            $table->string('category')->nullable();
             $table->string('image_url')->nullable();
             $table->integer('stock')->default(0);
             $table->text('description')->nullable();

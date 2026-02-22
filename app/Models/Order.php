@@ -43,7 +43,6 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Helper methods
     public function isPending()
     {
         return $this->status === 'PENDING';
