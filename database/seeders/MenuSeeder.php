@@ -9,7 +9,7 @@ class MenuSeeder extends Seeder
 {
     public function run(): void
     {
-        $menu = [
+        $menus = [
             [
                 'name' => 'Caffe Latte',
                 'price' => 35000,
@@ -285,7 +285,7 @@ class MenuSeeder extends Seeder
             ]
         ];
 
-        foreach ($menu as $menu) {
+        foreach ($menus as $menu) {
             Menu::create($menu);
         }
     }

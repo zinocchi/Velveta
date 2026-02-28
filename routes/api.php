@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Shop\MenuController;
 use App\Http\Controllers\Api\Shop\OrderController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\Api\Auth\AdminAuthController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -13,7 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', fn(Request $request) => response()->json([
         'user' => $request->user()
     ]));
-
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
@@ -33,8 +34,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [OrderController::class, 'show']);
         Route::post('/{order}/pay', [OrderController::class, 'pay']);
     });
-
-    Route::middleware(['admin'])->group(function () {
-        Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
-    });
 });
+
+Route::prefix('admin')->group(function () {
+    Route::post('/register', [AdminAuthController::class, 'register']);
+    Route::post('/login', [AdminAuthController::class, 'login']);
+});
+
+// Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
+//     Route::post('register', [AdminAuthController::class, 'register']);
+//     Route::post('login', [AdminAuthController::class, 'login']);
+//     Route::post('logout', [AdminAuthController::class, 'logout']);
+// });
+
+
