@@ -73,4 +73,9 @@ class Menu extends Model
     {
         return $this->stock > 0;
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

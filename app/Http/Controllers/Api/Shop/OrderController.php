@@ -10,8 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Closure;
-use Illuminate\Container\Attributes\Auth;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -41,7 +40,7 @@ class OrderController extends Controller
         do {
             $number = str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
         } while (
-            \App\Models\Order::where('order_number', $number)->exists()
+            Order::where('order_number', $number)->exists()
         );
 
         return $number;
@@ -72,7 +71,6 @@ class OrderController extends Controller
             }
         } else {
             Log::info('Validating for pickup type');
-
             $rules['shipping_address'] = 'nullable';
         }
 
@@ -98,25 +96,29 @@ class OrderController extends Controller
         try {
             $calculatedItemsTotal = 0;
             $itemsDetail = [];
+            $stockCheck = [];
 
             foreach ($request->items as $item) {
-                $menu = Menu::find($item['id']);
+                $menu = Menu::lockForUpdate()->find($item['id']);
 
                 if (!$menu) {
                     throw new \Exception("Menu with ID {$item['id']} not found");
                 }
 
-                Log::info('Processing item:', [
+                if ($menu->stock < $item['qty']) {
+                    throw new \Exception("Stock for {$menu->name} is not enough. Available: {$menu->stock}, Requested: {$item['qty']}");
+                }
+
+                Log::info('Stock check passed for item:', [
                     'menu_id' => $menu->id,
                     'menu_name' => $menu->name,
-                    'menu_price' => $menu->price,
-                    'qty' => $item['qty']
+                    'available_stock' => $menu->stock,
+                    'requested_qty' => $item['qty']
                 ]);
 
                 $calculatedItemsTotal += $menu->price * $item['qty'];
-                $itemsDetail[] = [
-                    'name' => $menu->name,
-                    'price' => $menu->price,
+                $stockCheck[] = [
+                    'menu' => $menu,
                     'qty' => $item['qty']
                 ];
             }
@@ -156,7 +158,7 @@ class OrderController extends Controller
                     'full_address' => $request->shipping_address['full_address'] ?? null,
                 ];
 
-                $orderData['estimated_minutes'] = 45; // default delivery time
+                $orderData['estimated_minutes'] = 45;
             }
 
             if ($request->has('delivery_option') && $request->delivery_option) {
@@ -177,20 +179,32 @@ class OrderController extends Controller
             $order = Order::create($orderData);
             Log::info('Order created with ID: ' . $order->id);
 
-            foreach ($request->items as $item) {
-                $menu = Menu::findOrFail($item['id']);
+            foreach ($stockCheck as $item) {
+                $menu = $item['menu'];
+                $qty = $item['qty'];
+
+                $menu->stock -= $qty;
+                $menu->save();
+
+                Log::info('Stock reduced for menu:', [
+                    'menu_id' => $menu->id,
+                    'menu_name' => $menu->name,
+                    'previous_stock' => $menu->stock + $qty,
+                    'new_stock' => $menu->stock,
+                    'qty_reduced' => $qty
+                ]);
 
                 $orderItem = OrderItem::create([
                     'order_id' => $order->id,
                     'menu_id' => $menu->id,
-                    'qty' => $item['qty'],
+                    'qty' => $qty,
                     'price' => $menu->price,
                 ]);
 
                 Log::info('Order item created:', [
                     'order_item_id' => $orderItem->id,
                     'menu_id' => $menu->id,
-                    'qty' => $item['qty']
+                    'qty' => $qty
                 ]);
             }
 
@@ -218,8 +232,6 @@ class OrderController extends Controller
                 'success' => false,
                 'message' => 'Failed to create order',
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
             ], 500);
         }
     }
@@ -231,32 +243,96 @@ class OrderController extends Controller
                 'status' => 'required|string|in:PENDING,PROCESSING,COMPLETED,CANCELLED'
             ]);
 
-            $order = Order::findOrFail($id);
+            DB::beginTransaction();
+
+            $order = Order::with('items')->findOrFail($id);
+            $oldStatus = $order->status;
+
+            if ($request->status === 'CANCELLED' && $oldStatus !== 'CANCELLED') {
+                Log::info('Order cancellation initiated', [
+                    'order_id' => $order->id,
+                    'old_status' => $oldStatus
+                ]);
+
+                foreach ($order->items as $item) {
+                    $menu = Menu::lockForUpdate()->find($item->menu_id);
+
+                    if ($menu) {
+                        $menu->stock += $item->qty;
+                        $menu->save();
+
+                        Log::info('Stock restored for cancelled order:', [
+                            'order_id' => $order->id,
+                            'menu_id' => $menu->id,
+                            'menu_name' => $menu->name,
+                            'previous_stock' => $menu->stock - $item->qty,
+                            'new_stock' => $menu->stock,
+                            'qty_restored' => $item->qty
+                        ]);
+                    }
+                }
+            }
+
+            if ($oldStatus === 'CANCELLED' && $request->status !== 'CANCELLED') {
+                Log::info('Order reactivation initiated', [
+                    'order_id' => $order->id,
+                    'new_status' => $request->status
+                ]);
+
+                foreach ($order->items as $item) {
+                    $menu = Menu::lockForUpdate()->find($item->menu_id);
+
+                    if (!$menu) {
+                        throw new \Exception("Menu with ID {$item->menu_id} not found");
+                    }
+
+                    if ($menu->stock < $item->qty) {
+                        throw new \Exception("Cannot reactivate order. Insufficient stock for {$menu->name}. Available: {$menu->stock}, Required: {$item->qty}");
+                    }
+
+                    $menu->stock -= $item->qty;
+                    $menu->save();
+
+                    Log::info('Stock reduced for reactivated order:', [
+                        'order_id' => $order->id,
+                        'menu_id' => $menu->id,
+                        'menu_name' => $menu->name,
+                        'previous_stock' => $menu->stock + $item->qty,
+                        'new_stock' => $menu->stock,
+                        'qty_reduced' => $item->qty
+                    ]);
+                }
+            }
 
             $order->status = $request->status;
             $order->save();
 
+            DB::commit();
+
             Log::info('Order status updated', [
                 'order_id' => $order->id,
+                'old_status' => $oldStatus,
                 'new_status' => $order->status,
                 'updated_by' => $request->user()->id
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Order status updated',
+                'message' => 'Order status updated successfully',
                 'data' => $order
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found'
             ], 404);
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Failed to update order status: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update order status'
+                'message' => 'Failed to update order status: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -297,7 +373,7 @@ class OrderController extends Controller
     public function show($id)
     {
         try {
-            $user = FacadesAuth::user();
+            $user = Auth::user();
 
             if (!$user) {
                 return response()->json([
@@ -317,7 +393,7 @@ class OrderController extends Controller
                 ], 404);
             }
 
-            if ($order->user_id !== $user->id) {
+            if ($order->user_id !== $user->id && $user->role !== 'admin') {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized'
