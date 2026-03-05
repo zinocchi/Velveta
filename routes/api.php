@@ -3,8 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Shop\MenuController;
-use App\Http\Controllers\Api\Shop\OrderController;
+use App\Http\Controllers\Api\User\MenuController;
+use App\Http\Controllers\Api\User\OrderController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
@@ -39,26 +39,16 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-// admin
-Route::middleware(['auth:sanctum', 'admin'])
-    ->prefix('admin')
-    ->group(function () {
-        Route::apiResource('menus', \App\Http\Controllers\Api\Admin\AdminMenuController::class);
-    });
-
-Route::middleware(['auth:sanctum', 'admin'])
-    ->prefix('admin')
-    ->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index']);
-    });
-
+//admin
 Route::prefix('admin')->group(function () {
+
     Route::post('/register', [AdminAuthController::class, 'register']);
     Route::post('/login', [AdminAuthController::class, 'login']);
+
+    Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+        Route::apiResource('menus', AdminMenuController::class);
+    });
 });
 
-// Route::prefix('admin')->middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
-//     Route::post('register', [AdminAuthController::class, 'register']);
-//     Route::post('login', [AdminAuthController::class, 'login']);
-//     Route::post('logout', [AdminAuthController::class, 'logout']);
-// });
+

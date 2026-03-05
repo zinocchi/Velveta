@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
+    
 class AdminAuthController extends Controller
 {
     public function register(Request $request)
@@ -21,8 +21,8 @@ class AdminAuthController extends Controller
         $admin = User::create([
             'fullname' => $request->fullname,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'work_pin' => $request->work_pin,
+            'password' => Hash::make($request->password),
+            'work_pin' => Hash::make($request->work_pin),
             'role' => 'admin',
         ]);
 
@@ -35,18 +35,24 @@ class AdminAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'fullname' => 'required|string',
-            'work_pin' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required',
+            'work_pin' => 'required'
         ]);
 
-        $admin = User::where('fullname', $request->fullname)
-            ->where('work_pin', $request->work_pin)
+        $admin = User::where('email', $request->email)
             ->where('role', 'admin')
             ->first();
 
-        if (!$admin) {
+        if (!$admin || !Hash::check($request->password, $admin->password)) {
             return response()->json([
-                'message' => 'Invalid admin credentials'
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        if (!Hash::check($request->work_pin, $admin->work_pin)) {
+            return response()->json([
+                'message' => 'Invalid work PIN'
             ], 401);
         }
 
@@ -61,5 +67,14 @@ class AdminAuthController extends Controller
                 'role' => $admin->role,
             ]
         ]);
+}
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ], 200);
     }
 }

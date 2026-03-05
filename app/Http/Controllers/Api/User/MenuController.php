@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Shop;
+namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Menu;
@@ -22,7 +22,7 @@ class MenuController extends Controller
             $category = $request->query('category');
             $search = $request->query('search');
 
-            
+
             $menu = Menu::query()
                 ->search($search)
                 ->byCategory($category)
