@@ -122,7 +122,6 @@ class OrderController extends Controller
                     'qty' => $item['qty']
                 ];
             }
-
             $finalTotal = $calculatedItemsTotal + $request->shipping_cost;
             Log::info('Calculated totals:', [
                 'items_total' => $calculatedItemsTotal,

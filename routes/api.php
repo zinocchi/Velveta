@@ -9,6 +9,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\Admin\AdminMenuController;
+use App\Http\Controllers\Api\Admin\AdminOrderController; // Tambahkan ini
 
 //user
 Route::post('/login', [AuthController::class, 'login']);
@@ -29,7 +30,6 @@ Route::prefix('menu')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::prefix('orders')->group(function () {
         Route::post('/', [OrderController::class, 'store']);
         Route::get('/', [OrderController::class, 'index']);
@@ -41,14 +41,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //admin
 Route::prefix('admin')->group(function () {
-
     Route::post('/register', [AdminAuthController::class, 'register']);
     Route::post('/login', [AdminAuthController::class, 'login']);
 
     Route::middleware(['auth:sanctum', 'admin'])->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+        Route::get('/dashboard/revenue-report', [AdminDashboardController::class, 'getRevenueReport']);
+
         Route::apiResource('menus', AdminMenuController::class);
+
+        Route::post('/menus/bulk-update-stock', [AdminMenuController::class, 'bulkUpdateStock']);
+        Route::put('/menus/{id}/stock', [AdminMenuController::class, 'updateStock']);
+        Route::get('/stock/low-stock', [AdminMenuController::class, 'getLowStockItems']);
+        Route::get('/categories', [AdminMenuController::class, 'getCategories']);
+        Route::patch('/menus/{id}/toggle-availability', [AdminMenuController::class, 'toggleAvailability']);
+
+        Route::get('/orders', [AdminOrderController::class, 'index']);
+        Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
+        Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+        Route::post('/orders/bulk-status', [AdminOrderController::class, 'bulkUpdateStatus']);
+        Route::get('/orders/statistics/overview', [AdminOrderController::class, 'getStatistics']);
+        Route::get('/orders/recent/recent-list', [AdminOrderController::class, 'getRecentOrders']);
     });
 });
-
-
