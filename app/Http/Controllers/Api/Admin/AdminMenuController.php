@@ -81,7 +81,6 @@ class AdminMenuController extends Controller
         try {
             $data = $request->except('image');
 
-            // Handle image upload
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('menus', 'public');
                 $data['image'] = $imagePath;

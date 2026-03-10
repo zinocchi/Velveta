@@ -18,15 +18,16 @@ class User extends Authenticatable
         'password',
         'google_id',
         'avatar',
-        'work_pin',
         'role',
+        'work_pin',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'work_pin',
     ];
-    
+
     protected $casts = [
         'email_verified_at' => 'datetime',
         'role' => 'string',
