@@ -120,7 +120,7 @@ class AdminAuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'fullname' => 'required|string|max:255',
+            // 'fullname' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
@@ -129,11 +129,10 @@ class AdminAuthController extends Controller
 
         $workPin = $request->input('work_pin');
 
-        // Cek format work PIN (harus VELVETA01, VELVETA02, dst)
         if (!preg_match('/^VELVETA\d{2}$/', $workPin)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Work PIN must be in format: VELVETA01, VELVETA02, etc.'
+                'message' => 'Work PIN format wrong.'
             ], 422);
         }
 

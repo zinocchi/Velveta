@@ -70,7 +70,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/orders/statistics/overview', [AdminOrderController::class, 'getStatistics']);
         Route::get('/orders/recent/recent-list', [AdminOrderController::class, 'getRecentOrders']);
 
-        Route::post('/generate-pin', [AdminAuthController::class, 'generateWorkPin']);
-        Route::get('/available-pins', [AdminAuthController::class, 'getAvailableWorkPins']);
+        // Route::post('/generate-pin', [AdminAuthController::class, 'generateWorkPin']);
+        // Route::get('/available-pins', [AdminAuthController::class, 'getAvailableWorkPins']);
     });
 });
