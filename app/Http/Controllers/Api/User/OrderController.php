@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Menu;
+use App\Models\PaymentMethod;
+use App\Models\EWalletProvider;
+use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Closure;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -18,7 +20,7 @@ class OrderController extends Controller
     {
         try {
             $orders = $request->user()->orders()
-                ->with(['items.menu'])
+                ->with(['items.menu', 'paymentMethod', 'eWalletProvider', 'bank'])
                 ->latest()
                 ->get();
 
@@ -39,9 +41,7 @@ class OrderController extends Controller
     {
         do {
             $number = str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT);
-        } while (
-            Order::where('order_number', $number)->exists()
-        );
+        } while (Order::where('order_number', $number)->exists());
 
         return $number;
     }
@@ -50,40 +50,52 @@ class OrderController extends Controller
     {
         Log::info('=== ORDER CREATION STARTED ===');
         Log::info('Request data:', $request->all());
-        Log::info('Request user:', ['user_id' => $request->user()?->id]);
 
         $rules = [
             'items' => 'required|array|min:1',
             'items.*.id' => 'required|exists:menus,id',
             'items.*.qty' => 'required|integer|min:1',
-            'payment_method' => 'required|string',
+            'payment_method' => 'required|string|in:credit_card,e_wallet,bank_transfer,cash',
             'delivery_type' => 'required|string|in:delivery,pickup',
             'shipping_cost' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
         ];
 
-        if ($request->delivery_type === 'delivery') {
-            Log::info('Validating for delivery type');
-            $rules['shipping_address'] = 'required|array';
+        // Validasi payment details berdasarkan metode
+        if (in_array($request->payment_method, ['credit_card', 'e_wallet', 'bank_transfer'])) {
+            $rules['payment_details'] = 'required|array';
 
-            if ($request->has('shipping_address') && is_array($request->shipping_address)) {
-                Log::info('Shipping address keys:', array_keys($request->shipping_address));
+            switch ($request->payment_method) {
+                case 'credit_card':
+                    $rules['payment_details.card_number'] = 'required|string';
+                    $rules['payment_details.card_holder'] = 'required|string';
+                    $rules['payment_details.expiry'] = 'required|string';
+                    $rules['payment_details.cvv'] = 'required|string|size:3';
+                    break;
+
+                case 'e_wallet':
+                    $rules['payment_details.provider'] = 'required|string|in:OVO,GoPay,DANA';
+                    $rules['payment_details.phone'] = 'required|string|regex:/^08[0-9]{8,11}$/';
+                    break;
+
+                case 'bank_transfer':
+                    $rules['payment_details.bank'] = 'required|string|in:BCA,Mandiri,BNI,BRI';
+                    break;
             }
-        } else {
-            Log::info('Validating for pickup type');
-            $rules['shipping_address'] = 'nullable';
         }
 
-        if ($request->has('delivery_option') && $request->delivery_option) {
-            Log::info('Has delivery option');
-            $rules['delivery_option'] = 'nullable|array';
+        if ($request->delivery_type === 'delivery') {
+            $rules['shipping_address'] = 'required|array';
+            $rules['shipping_address.recipientName'] = 'required|string';
+            $rules['shipping_address.phoneNumber'] = 'required|string';
+            $rules['shipping_address.address'] = 'required|string';
+            $rules['shipping_address.city'] = 'required|string';
+            $rules['shipping_address.postalCode'] = 'required|string';
         }
 
         try {
             $validatedData = $request->validate($rules);
-            Log::info('Validation passed');
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed:', $e->errors());
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -94,8 +106,8 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
+            // Hitung ulang total
             $calculatedItemsTotal = 0;
-            $itemsDetail = [];
             $stockCheck = [];
 
             foreach ($request->items as $item) {
@@ -109,31 +121,20 @@ class OrderController extends Controller
                     throw new \Exception("Stock for {$menu->name} is not enough. Available: {$menu->stock}, Requested: {$item['qty']}");
                 }
 
-                Log::info('Stock check passed for item:', [
-                    'menu_id' => $menu->id,
-                    'menu_name' => $menu->name,
-                    'available_stock' => $menu->stock,
-                    'requested_qty' => $item['qty']
-                ]);
-
                 $calculatedItemsTotal += $menu->price * $item['qty'];
                 $stockCheck[] = [
                     'menu' => $menu,
                     'qty' => $item['qty']
                 ];
             }
+
             $finalTotal = $calculatedItemsTotal + $request->shipping_cost;
-            Log::info('Calculated totals:', [
-                'items_total' => $calculatedItemsTotal,
-                'shipping_cost' => $request->shipping_cost,
-                'final_total' => $finalTotal,
-                'client_total' => $request->total
-            ]);
 
             if (abs($finalTotal - $request->total) > 0.01) {
                 throw new \Exception('Total price mismatch. Please refresh your cart.');
             }
 
+            // Siapkan data order
             $orderData = [
                 'user_id' => $request->user()->id,
                 'order_number' => $this->generateOrderNumber(),
@@ -144,71 +145,60 @@ class OrderController extends Controller
                 'shipping_cost' => $request->shipping_cost,
             ];
 
-            if ($request->delivery_type === 'delivery' && $request->has('shipping_address') && $request->shipping_address) {
-                Log::info('Processing shipping address');
+            // Simpan payment details
+            if ($request->has('payment_details')) {
+                $orderData['payment_details'] = $request->payment_details;
+
+                // Simpan field spesifik untuk relasi
+                if ($request->payment_method === 'e_wallet') {
+                    $orderData['e_wallet_provider'] = $request->payment_details['provider'];
+                } elseif ($request->payment_method === 'bank_transfer') {
+                    $orderData['bank_code'] = $request->payment_details['bank'];
+                } elseif ($request->payment_method === 'credit_card') {
+                    $orderData['card_last4'] = substr(str_replace(' ', '', $request->payment_details['card_number']), -4);
+                }
+            }
+
+            // Shipping address
+            if ($request->delivery_type === 'delivery' && $request->has('shipping_address')) {
                 $orderData['shipping_address'] = [
-                    'id' => $request->shipping_address['id'] ?? null,
                     'recipient_name' => $request->shipping_address['recipientName'] ?? null,
                     'phone_number' => $request->shipping_address['phoneNumber'] ?? null,
                     'address' => $request->shipping_address['address'] ?? null,
                     'detail' => $request->shipping_address['detail'] ?? '',
                     'city' => $request->shipping_address['city'] ?? null,
                     'postal_code' => $request->shipping_address['postalCode'] ?? null,
-                    'full_address' => $request->shipping_address['full_address'] ?? null,
                 ];
-
                 $orderData['estimated_minutes'] = 45;
-            }
-
-            if ($request->has('delivery_option') && $request->delivery_option) {
-                Log::info('Processing delivery option');
-                $orderData['delivery_option'] = [
-                    'id' => $request->delivery_option['id'] ?? null,
-                    'name' => $request->delivery_option['name'] ?? null,
-                    'price' => $request->delivery_option['price'] ?? null,
-                ];
-            }
-
-            if ($request->delivery_type === 'pickup') {
+            } else {
                 $orderData['estimated_minutes'] = 15;
             }
 
-            Log::info('Order data to be created:', $orderData);
+            // Delivery option
+            if ($request->has('delivery_option')) {
+                $orderData['delivery_option'] = $request->delivery_option;
+            }
 
             $order = Order::create($orderData);
-            Log::info('Order created with ID: ' . $order->id);
 
+            // Kurangi stok dan buat order items
             foreach ($stockCheck as $item) {
                 $menu = $item['menu'];
-                $qty = $item['qty'];
-
-                $menu->stock -= $qty;
+                $menu->stock -= $item['qty'];
                 $menu->save();
 
-                Log::info('Stock reduced for menu:', [
-                    'menu_id' => $menu->id,
-                    'menu_name' => $menu->name,
-                    'previous_stock' => $menu->stock + $qty,
-                    'new_stock' => $menu->stock,
-                    'qty_reduced' => $qty
-                ]);
-
-                $orderItem = OrderItem::create([
+                OrderItem::create([
                     'order_id' => $order->id,
                     'menu_id' => $menu->id,
-                    'qty' => $qty,
+                    'qty' => $item['qty'],
                     'price' => $menu->price,
-                ]);
-
-                Log::info('Order item created:', [
-                    'order_item_id' => $orderItem->id,
-                    'menu_id' => $menu->id,
-                    'qty' => $qty
                 ]);
             }
 
             DB::commit();
-            Log::info('Transaction committed successfully');
+
+            // Load relasi untuk response
+            $order->load(['paymentMethod', 'eWalletProvider', 'bank', 'items.menu']);
 
             return response()->json([
                 'success' => true,
@@ -216,21 +206,120 @@ class OrderController extends Controller
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
                 'data' => [
-                    'order_id' => $order->id,
-                    'status' => $order->status,
-                    'total' => $order->total_price,
+                    'order' => $order,
+                    'payment_instructions' => $this->getPaymentInstructions($order)
                 ]
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-
             Log::error('Order creation failed: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create order',
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function getPaymentInstructions($order)
+    {
+        $instructions = [];
+
+        if ($order->payment_method === 'bank_transfer') {
+            $bankAccounts = [
+                'BCA' => ['account' => '1234567890', 'name' => 'PT Velveta Coffee'],
+                'Mandiri' => ['account' => '0987654321', 'name' => 'PT Velveta Coffee'],
+                'BNI' => ['account' => '1122334455', 'name' => 'PT Velveta Coffee'],
+                'BRI' => ['account' => '5544332211', 'name' => 'PT Velveta Coffee']
+            ];
+
+            $selectedBank = $order->payment_details['bank'] ?? 'BCA';
+
+            $instructions = [
+                'type' => 'bank_transfer',
+                'bank_name' => $selectedBank,
+                'account_number' => $bankAccounts[$selectedBank]['account'],
+                'account_name' => $bankAccounts[$selectedBank]['name'],
+                'amount' => $order->total_price,
+                'expiry_hours' => 24,
+                'unique_code' => rand(100, 999)
+            ];
+        } elseif ($order->payment_method === 'e_wallet') {
+            $instructions = [
+                'type' => 'e_wallet',
+                'provider' => $order->payment_details['provider'] ?? '',
+                'phone' => $order->payment_details['phone'] ?? '',
+                'amount' => $order->total_price,
+                'steps' => [
+                    'Open your ' . ($order->payment_details['provider'] ?? '') . ' app',
+                    'Select "Pay" or "Scan"',
+                    'Enter the amount or scan QR code',
+                    'Confirm payment'
+                ]
+            ];
+        }
+
+        return $instructions;
+    }
+
+    public function myOrder()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $orders = Order::with(['items.menu', 'paymentMethod', 'eWalletProvider', 'bank'])
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ]);
+    }
+
+    public function show($id)
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
+
+            $order = Order::with(['items.menu', 'paymentMethod', 'eWalletProvider', 'bank'])
+                ->where('id', $id)
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order not found'
+                ], 404);
+            }
+
+            if ($order->user_id !== $user->id && $user->role !== 'admin') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $order
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch order',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -336,78 +425,27 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Admin middleware handler
-     */
-    public function handle($request, Closure $next)
-    {
-        $user = $request->user();
-
-        if (!$user || $user->role !== 'admin') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Forbidden. Admin access required.'
-            ], 403);
-        }
-
-        return $next($request);
-    }
-
-    public function myOrder()
-    {
-        $user = auth()->user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
-        }
-
-        $orders = Order::with('items.menu')
-            ->where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json($orders);
-    }
-
-    public function show($id)
+    public function checkPaymentStatus($id)
     {
         try {
-            $user = Auth::user();
+            $order = Order::findOrFail($id);
 
-            if (!$user) {
+            if ($order->paid_at) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthenticated'
-                ], 401);
-            }
-
-            $order = Order::with(['items.menu'])
-                ->where('id', $id)
-                ->first();
-
-            if (!$order) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Order not found'
-                ], 404);
-            }
-
-            if ($order->user_id !== $user->id && $user->role !== 'admin') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized'
-                ], 403);
+                    'success' => true,
+                    'paid' => true,
+                    'paid_at' => $order->paid_at
+                ]);
             }
 
             return response()->json([
                 'success' => true,
-                'data' => $order
-            ], 200);
+                'paid' => false
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch order',
-                'error' => $e->getMessage()
+                'message' => 'Failed to check payment status'
             ], 500);
         }
     }

@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(MenuSeeder::class);
         $this->call(AdminSeeder::class);
+        $this->call(PaymentMethodSeeder::class);
 
         User::factory()->create([
             'name' => 'Test User',

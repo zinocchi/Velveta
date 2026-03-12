@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Auth\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\Admin\AdminMenuController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
+use App\Http\Controllers\Api\User\PaymentMethodController;
 
 //user auth
 Route::post('/login', [AuthController::class, 'login']);
@@ -29,6 +30,7 @@ Route::prefix('menu')->group(function () {
     Route::get('/category/{slug}', [MenuController::class, 'byCategory']);
     Route::get('/{id}', [MenuController::class, 'show']);
 });
+
 
 //user routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -72,7 +74,23 @@ Route::prefix('admin')->group(function () {
         Route::get('/dashboard/revenue-report', [AdminDashboardController::class, 'getRevenueReport']);
 
 
+
         // Route::post('/generate-pin', [AdminAuthController::class, 'generateWorkPin']);
         // Route::get('/available-pins', [AdminAuthController::class, 'getAvailableWorkPins']);
     });
+});
+
+Route::prefix('payment')->group(function () {
+    // Public routes (no auth required)
+    Route::get('/methods', [PaymentMethodController::class, 'getMethods']);
+    Route::get('/methods/{code}', [PaymentMethodController::class, 'getMethod']);
+
+    // Protected x   (need auth)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/validate', [PaymentMethodController::class, 'validatePayment']);
+    });
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/orders/{id}/payment-status', [OrderController::class, 'checkPaymentStatus']);
 });
