@@ -120,7 +120,6 @@ class AdminAuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            // 'fullname' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
@@ -163,7 +162,6 @@ class AdminAuthController extends Controller
         }
 
         $user = User::create([
-            'fullname' => $request->fullname,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),

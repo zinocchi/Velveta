@@ -11,7 +11,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['PENDING', 'PROCESSING', 'COMPLETED', 'CANCELLED'])->default('PENDING');
+            $table->enum('status', [ 'PROCESSING', 'COMPLETED', 'CANCELLED'])->default('PROCESSING');
             $table->string('payment_method');
             $table->enum('delivery_type', ['delivery', 'pickup']);
             $table->decimal('shipping_cost', 10, 2)->default(0);

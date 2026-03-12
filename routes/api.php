@@ -69,6 +69,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/orders/bulk-status', [AdminOrderController::class, 'bulkUpdateStatus']);
         Route::get('/orders/statistics/overview', [AdminOrderController::class, 'getStatistics']);
         Route::get('/orders/recent/recent-list', [AdminOrderController::class, 'getRecentOrders']);
+        Route::get('/dashboard/revenue-report', [AdminDashboardController::class, 'getRevenueReport']);
+
 
         // Route::post('/generate-pin', [AdminAuthController::class, 'generateWorkPin']);
         // Route::get('/available-pins', [AdminAuthController::class, 'getAvailableWorkPins']);

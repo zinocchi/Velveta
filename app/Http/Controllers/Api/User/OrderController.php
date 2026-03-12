@@ -138,7 +138,7 @@ class OrderController extends Controller
                 'user_id' => $request->user()->id,
                 'order_number' => $this->generateOrderNumber(),
                 'total_price' => $finalTotal,
-                'status' => 'PENDING',
+                'status' => 'PROCESSING',
                 'payment_method' => $request->payment_method,
                 'delivery_type' => $request->delivery_type,
                 'shipping_cost' => $request->shipping_cost,
