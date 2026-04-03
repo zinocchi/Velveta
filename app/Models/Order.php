@@ -13,7 +13,7 @@ class Order extends Model
         'total_price',
         'status',
         'payment_method',
-        'payment_details', // Tambah
+        'payment_details',
         'delivery_type',
         'shipping_cost',
         'shipping_address',
@@ -21,20 +21,20 @@ class Order extends Model
         'estimated_minutes',
         'order_number',
         'paid_at',
-        'e_wallet_provider', // Tambah
-        'bank_code', // Tambah
-        'card_last4' // Tambah
+        'e_wallet_provider',
+        'bank_code',
+        'card_last4' 
     ];
 
     protected $casts = [
         'shipping_address' => 'array',
         'delivery_option' => 'array',
-        'payment_details' => 'array', // Tambah
+        'payment_details' => 'array',
         'paid_at' => 'datetime',
     ];
 
     protected $attributes = [
-        'status' => 'PROCESSING', // Sesuai migration: default PROCESSING
+        'status' => 'PROCESSING',
     ];
 
     public function items()
@@ -47,7 +47,6 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Relasi ke payment methods
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method', 'code');
@@ -63,7 +62,6 @@ class Order extends Model
         return $this->belongsTo(Bank::class, 'bank_code', 'code');
     }
 
-    // Status checks
     public function isProcessing()
     {
         return $this->status === 'PROCESSING';
@@ -79,7 +77,6 @@ class Order extends Model
         return $this->status === 'CANCELLED';
     }
 
-    // Delivery type checks
     public function isDelivery()
     {
         return $this->delivery_type === 'delivery';
@@ -90,7 +87,6 @@ class Order extends Model
         return $this->delivery_type === 'pickup';
     }
 
-    // Payment info helpers
     public function getPaymentMethodName()
     {
         $methods = [
@@ -115,3 +111,4 @@ class Order extends Model
         return $icons[$this->payment_method] ?? 'FaCreditCard';
     }
 }
+

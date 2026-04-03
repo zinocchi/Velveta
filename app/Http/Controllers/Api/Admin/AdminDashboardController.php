@@ -25,21 +25,18 @@ class AdminDashboardController extends Controller
             $startOfMonth = now()->startOfMonth();
             $endOfMonth = now()->endOfMonth();
 
-            // Basic stats
+            // Check if tables exist and have data
             $stats = [
-                // Overview stats
                 'total_orders' => Order::count(),
-                'total_revenue' => Order::where('status', 'COMPLETED')->sum('total_price'),
+                'total_revenue' => Order::where('status', 'COMPLETED')->sum('total_price') ?? 0,
                 'total_menu' => Menu::count(),
                 'total_users' => User::count(),
 
-                // Today's stats
                 'today_orders' => Order::whereBetween('created_at', [$today, $tomorrow])->count(),
                 'today_revenue' => Order::where('status', 'COMPLETED')
                     ->whereBetween('created_at', [$today, $tomorrow])
-                    ->sum('total_price'),
+                    ->sum('total_price') ?? 0,
 
-                // Order status breakdown
                 'orders_by_status' => [
                     'pending' => Order::where('status', 'PENDING')->count(),
                     'processing' => Order::where('status', 'PROCESSING')->count(),
@@ -47,51 +44,63 @@ class AdminDashboardController extends Controller
                     'cancelled' => Order::where('status', 'CANCELLED')->count(),
                 ],
 
-                // Delivery type breakdown
                 'orders_by_delivery' => [
                     'delivery' => Order::where('delivery_type', 'delivery')->count(),
                     'pickup' => Order::where('delivery_type', 'pickup')->count(),
                 ],
 
-                // Stock stats
                 'stock_stats' => [
-                    'total_items' => Menu::sum('stock'),
+                    'total_items' => Menu::sum('stock') ?? 0,
                     'low_stock' => Menu::where('stock', '<', 10)->where('stock', '>', 0)->count(),
                     'out_of_stock' => Menu::where('stock', '<=', 0)->count(),
                     'available_items' => Menu::where('stock', '>', 0)->count(),
                 ],
-
-                // Revenue stats
                 'revenue' => [
                     'today' => Order::where('status', 'COMPLETED')
                         ->whereBetween('created_at', [$today, $tomorrow])
-                        ->sum('total_price'),
+                        ->sum('total_price') ?? 0,
                     'this_week' => Order::where('status', 'COMPLETED')
                         ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-                        ->sum('total_price'),
+                        ->sum('total_price') ?? 0,
                     'this_month' => Order::where('status', 'COMPLETED')
                         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-                        ->sum('total_price'),
+                        ->sum('total_price') ?? 0,
                     'average_order_value' => Order::where('status', 'COMPLETED')->avg('total_price') ?? 0,
                 ],
             ];
 
-            // Recent activities
+            // Get recent orders - handle potential missing columns
             $recentOrders = Order::with('user')
                 ->latest()
                 ->limit(10)
-                ->get(['id', 'order_number', 'user_id', 'total_price', 'status', 'created_at']);
-
-            // Popular menu items (top 5)
-            $popularMenus = DB::table('order_items')
-                ->join('menus', 'order_items.menu_id', '=', 'menus.id')
-                ->select('menus.id', 'menus.name', 'menus.image', DB::raw('SUM(order_items.qty) as total_sold'))
-                ->groupBy('menus.id', 'menus.name', 'menus.image')
-                ->orderBy('total_sold', 'desc')
-                ->limit(5)
                 ->get();
 
-            // Revenue chart data (last 7 days)
+            // If order_number column doesn't exist, use id instead
+            if ($recentOrders->isNotEmpty()) {
+                $recentOrders = $recentOrders->map(function($order) {
+                    if (!isset($order->order_number)) {
+                        $order->order_number = 'ORD-' . str_pad($order->id, 6, '0', STR_PAD_LEFT);
+                    }
+                    return $order;
+                });
+            }
+
+            // Get popular menus - handle when order_items table is empty
+            $popularMenus = [];
+            try {
+                $popularMenus = DB::table('order_items')
+                    ->join('menus', 'order_items.menu_id', '=', 'menus.id')
+                    ->select('menus.id', 'menus.name', 'menus.image', DB::raw('SUM(order_items.qty) as total_sold'))
+                    ->groupBy('menus.id', 'menus.name', 'menus.image')
+                    ->orderBy('total_sold', 'desc')
+                    ->limit(5)
+                    ->get();
+            } catch (\Exception $e) {
+                Log::warning('Could not fetch popular menus: ' . $e->getMessage());
+                $popularMenus = collect([]);
+            }
+
+            // Revenue chart data
             $revenueChart = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = now()->subDays($i)->format('Y-m-d');
@@ -99,7 +108,7 @@ class AdminDashboardController extends Controller
 
                 $revenue = Order::where('status', 'COMPLETED')
                     ->whereDate('created_at', $date)
-                    ->sum('total_price');
+                    ->sum('total_price') ?? 0;
 
                 $orders = Order::whereDate('created_at', $date)->count();
 
@@ -122,9 +131,12 @@ class AdminDashboardController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to fetch dashboard data: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch dashboard data'
+                'message' => 'Failed to fetch dashboard data: ' . $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
@@ -134,13 +146,13 @@ class AdminDashboardController extends Controller
      */
     public function getRevenueReport(Request $request)
     {
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'group_by' => 'sometimes|in:day,week,month'
-        ]);
-
         try {
+            $request->validate([
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'group_by' => 'sometimes|in:day,week,month'
+            ]);
+
             $startDate = $request->start_date;
             $endDate = $request->end_date;
             $groupBy = $request->get('group_by', 'day');
@@ -148,7 +160,6 @@ class AdminDashboardController extends Controller
             $query = Order::where('status', 'COMPLETED')
                 ->whereBetween('created_at', [$startDate, $endDate]);
 
-            // Group by based on parameter
             switch ($groupBy) {
                 case 'week':
                     $revenueData = $query->get()
@@ -195,7 +206,7 @@ class AdminDashboardController extends Controller
             }
 
             $summary = [
-                'total_revenue' => $query->sum('total_price'),
+                'total_revenue' => $query->sum('total_price') ?? 0,
                 'total_orders' => $query->count(),
                 'average_order' => $query->avg('total_price') ?? 0,
                 'period' => [
@@ -214,9 +225,12 @@ class AdminDashboardController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to generate revenue report: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to generate revenue report'
+                'message' => 'Failed to generate revenue report: ' . $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }

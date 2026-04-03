@@ -73,8 +73,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/orders/recent/recent-list', [AdminOrderController::class, 'getRecentOrders']);
         Route::get('/dashboard/revenue-report', [AdminDashboardController::class, 'getRevenueReport']);
 
-
-
         // Route::post('/generate-pin', [AdminAuthController::class, 'generateWorkPin']);
         // Route::get('/available-pins', [AdminAuthController::class, 'getAvailableWorkPins']);
     });

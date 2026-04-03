@@ -58,14 +58,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            // 'fullname' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
         ]);
 
         $user = User::create([
-            // 'fullname' => $validated['fullname'],
             'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -92,7 +90,6 @@ class AuthController extends Controller
         $user = User::updateOrCreate(
             ['email' => $googleUser->email],
             [
-                // 'fullname'  => $googleUser->name,
                 'username'  => explode('@', $googleUser->email)[0],
                 'google_id' => $googleUser->id,
                 'avatar'    => $googleUser->avatar,

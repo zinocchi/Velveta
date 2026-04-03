@@ -61,7 +61,6 @@ class OrderController extends Controller
             'total' => 'required|numeric|min:0',
         ];
 
-        // Validasi payment details berdasarkan metode
         if (in_array($request->payment_method, ['credit_card', 'e_wallet', 'bank_transfer'])) {
             $rules['payment_details'] = 'required|array';
 

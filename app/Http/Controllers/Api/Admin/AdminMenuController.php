@@ -22,7 +22,6 @@ class AdminMenuController extends Controller
                 $query->where('category', $request->category);
             }
 
-            // Search by name or description
             if ($request->has('search') && $request->search) {
                 $search = $request->search;
                 $query->where(function($q) use ($search) {
@@ -31,7 +30,6 @@ class AdminMenuController extends Controller
                 });
             }
 
-            // Filter by stock status
             if ($request->has('stock_status')) {
                 if ($request->stock_status === 'low') {
                     $query->where('stock', '<', 10)->where('stock', '>', 0);
