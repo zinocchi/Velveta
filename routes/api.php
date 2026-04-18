@@ -62,7 +62,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/menus/{id}/stock', [AdminMenuController::class, 'updateStock']);
         Route::get('/stock/low-stock', [AdminMenuController::class, 'getLowStockItems']);
         Route::get('/categories', [AdminMenuController::class, 'getCategories']);
-        Route::patch('/menus/{id}/toggle-availability', [AdminMenuController::class, 'toggleAvailability']);
+        Route::patch('/menus/{id}/toggle-availability', [AdminMenuController::class, 'toggleAvailability']);    
 
         // Order Management
         Route::get('/orders', [AdminOrderController::class, 'index']);

@@ -115,7 +115,6 @@ class AdminOrderController extends Controller
                 }
             }
 
-            // Handle stock reduction if order is reactivated from cancelled
             if ($oldStatus === 'CANCELLED' && $newStatus !== 'CANCELLED') {
                 foreach ($order->items as $item) {
                     $menu = Menu::find($item->menu_id);

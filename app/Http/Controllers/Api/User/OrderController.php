@@ -105,7 +105,6 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
-            // Hitung ulang total
             $calculatedItemsTotal = 0;
             $stockCheck = [];
 
@@ -144,11 +143,9 @@ class OrderController extends Controller
                 'shipping_cost' => $request->shipping_cost,
             ];
 
-            // Simpan payment details
             if ($request->has('payment_details')) {
                 $orderData['payment_details'] = $request->payment_details;
 
-                // Simpan field spesifik untuk relasi
                 if ($request->payment_method === 'e_wallet') {
                     $orderData['e_wallet_provider'] = $request->payment_details['provider'];
                 } elseif ($request->payment_method === 'bank_transfer') {
@@ -158,7 +155,6 @@ class OrderController extends Controller
                 }
             }
 
-            // Shipping address
             if ($request->delivery_type === 'delivery' && $request->has('shipping_address')) {
                 $orderData['shipping_address'] = [
                     'recipient_name' => $request->shipping_address['recipientName'] ?? null,
@@ -196,7 +192,6 @@ class OrderController extends Controller
 
             DB::commit();
 
-            // Load relasi untuk response
             $order->load(['paymentMethod', 'eWalletProvider', 'bank', 'items.menu']);
 
             return response()->json([

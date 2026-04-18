@@ -24,9 +24,9 @@ class AdminMenuController extends Controller
 
             if ($request->has('search') && $request->search) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
 
@@ -40,7 +40,6 @@ class AdminMenuController extends Controller
                 }
             }
 
-            // Sort
             $sortField = $request->get('sort_field', 'created_at');
             $sortDirection = $request->get('sort_direction', 'desc');
             $query->orderBy($sortField, $sortDirection);
@@ -73,7 +72,7 @@ class AdminMenuController extends Controller
             'category' => 'required|string|max:100',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_available' => 'boolean'
+            'is_available' => 'nullable|in:true,false,0,1'
         ]);
 
         try {
@@ -84,7 +83,10 @@ class AdminMenuController extends Controller
                 $data['image'] = $imagePath;
             }
 
-            $data['is_available'] = $request->has('is_available') ? $request->is_available : true;
+            $data['is_available'] = filter_var(
+                $request->input('is_available', true),
+                FILTER_VALIDATE_BOOLEAN
+            );
 
             $menu = Menu::create($data);
 
@@ -97,29 +99,8 @@ class AdminMenuController extends Controller
             Log::error('Failed to create menu: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create menu'
+                'message' => 'Failed to create menu: ' . $e->getMessage()
             ], 500);
-        }
-    }
-
-    /**
-     * Display the specified menu
-     */
-    public function show($id)
-    {
-        try {
-            $menu = Menu::findOrFail($id);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Menu retrieved successfully',
-                'data' => $menu
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Menu not found'
-            ], 404);
         }
     }
 

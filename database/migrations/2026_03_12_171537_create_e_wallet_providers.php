@@ -11,10 +11,10 @@ return new class extends Migration
     {
         Schema::create('e_wallet_providers', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // ovo, gopay, dana
-            $table->string('name'); // OVO, GoPay, DANA
+            $table->string('code')->unique(); 
+            $table->string('name');
             $table->string('icon')->nullable();
-            $table->json('settings')->nullable(); // Minimal saldo, fee, dll
+            $table->json('settings')->nullable();
             $table->integer('display_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

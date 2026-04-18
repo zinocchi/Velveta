@@ -11,11 +11,11 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // credit_card, e_wallet, bank_transfer
-            $table->string('name'); // Credit Card, E-Wallet, Bank Transfer
-            $table->string('icon')->nullable(); // Nama icon atau URL
+            $table->string('code')->unique();
+            $table->string('name');
+            $table->string('icon')->nullable();
             $table->text('description')->nullable();
-            $table->json('settings')->nullable(); // Konfigurasi tambahan
+            $table->json('settings')->nullable();
             $table->integer('display_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
