@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\AdminWorkPin;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,19 @@ class AdminAuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
             'work_pin' => 'required|string|size:9',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $email = $request->input('email');
         $password = $request->input('password');
@@ -119,48 +128,67 @@ class AdminAuthController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'username' => 'required|string|max:50|unique:users,username',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'required|min:6|confirmed',
             'work_pin' => 'required|string|size:9',
         ]);
 
-        $workPin = $request->input('work_pin');
-
-        if (!preg_match('/^VELVETA\d{2}$/', $workPin)) {
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Work PIN format wrong.'
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
             ], 422);
         }
 
-        $pinNumber = (int) substr($workPin, -2);
+        $workPin = strtoupper($request->input('work_pin'));
 
+        // Check PIN format
+        if (!preg_match('/^VELVETA\d{2}$/', $workPin)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Work PIN format wrong. Must be VELVETA followed by 2 digits (e.g., VELVETA01).',
+                'errors' => [
+                    'work_pin' => ['Invalid PIN format. Must be VELVETA followed by 2 digits.']
+                ]
+            ], 422);
+        }
+
+        // Check if PIN is already used
         $existingPin = AdminWorkPin::where('work_pin', $workPin)->first();
         if ($existingPin && $existingPin->is_used) {
             return response()->json([
                 'success' => false,
-                'message' => 'This work PIN has already been used.'
+                'message' => 'This work PIN has already been used.',
+                'errors' => [
+                    'work_pin' => ['This work PIN has already been used. Please use the next available PIN.']
+                ]
             ], 422);
         }
 
+        // Get the last used PIN and determine expected next PIN
         $lastPin = AdminWorkPin::where('is_used', true)
             ->orderBy('id', 'desc')
             ->first();
 
         $expectedNumber = $lastPin ? ((int) substr($lastPin->work_pin, -2)) + 1 : 1;
+        $expectedPin = 'VELVETA' . str_pad((string)$expectedNumber, 2, '0', STR_PAD_LEFT);
 
-        $expectedPin = 'VELVETA' . str_pad($expectedNumber, 2, '0', STR_PAD_LEFT);
-
+        // Check PIN sequence
         if ($workPin !== $expectedPin) {
             return response()->json([
                 'success' => false,
                 'message' => "Invalid work PIN sequence. Expected: {$expectedPin}",
-                'expected_pin' => $expectedPin
+                'expected_pin' => $expectedPin,
+                'errors' => [
+                    'work_pin' => ["Invalid PIN sequence. Please use {$expectedPin}"]
+                ]
             ], 422);
         }
 
+        // Create user
         $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
@@ -169,6 +197,7 @@ class AdminAuthController extends Controller
             'role' => 'admin',
         ]);
 
+        // Update or create admin work PIN record
         AdminWorkPin::updateOrCreate(
             ['work_pin' => $workPin],
             [
@@ -178,19 +207,70 @@ class AdminAuthController extends Controller
             ]
         );
 
+        // Generate token
         $token = $user->createToken('admin-token')->plainTextToken;
+
+        // Calculate next available PIN
+        $nextPin = 'VELVETA' . str_pad((string)($expectedNumber + 1), 2, '0', STR_PAD_LEFT);
 
         return response()->json([
             'success' => true,
             'token' => $token,
             'user' => $user,
             'message' => 'Admin registered successfully',
-            'next_pin' => 'VELVETA' . str_pad($expectedNumber + 1, 2, '0', STR_PAD_LEFT)
+            'next_pin' => $nextPin
         ], 201);
     }
 
     /**
-     * Cek status login attempts
+     * Get available work PINs
+     */
+    public function availablePins()
+    {
+        // Get all used PINs
+        $usedPins = AdminWorkPin::where('is_used', true)
+            ->orderBy('id', 'asc')
+            ->pluck('work_pin')
+            ->toArray();
+
+        // Get all PINs from database
+        $allPins = AdminWorkPin::orderBy('work_pin', 'asc')
+            ->get(['work_pin', 'is_used', 'user_id'])
+            ->map(function($pin) {
+                return [
+                    'work_pin' => $pin->work_pin,
+                    'is_used' => $pin->is_used,
+                    'user_id' => $pin->user_id
+                ];
+            });
+
+        // Find the next expected PIN
+        $lastUsedPin = AdminWorkPin::where('is_used', true)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $nextNumber = $lastUsedPin ? ((int) substr($lastUsedPin->work_pin, -2)) + 1 : 1;
+        $nextPin = 'VELVETA' . str_pad((string)$nextNumber, 2, '0', STR_PAD_LEFT);
+
+        // Get available (unused) PINs
+        $availablePins = AdminWorkPin::where('is_used', false)
+            ->orderBy('work_pin', 'asc')
+            ->get(['work_pin'])
+            ->map(function($pin) {
+                return ['work_pin' => $pin->work_pin];
+            });
+
+        return response()->json([
+            'success' => true,
+            'available_pins' => $availablePins,
+            'all_pins' => $allPins,
+            'next_pin' => $nextPin,
+            'used_pins' => $usedPins
+        ]);
+    }
+
+    /**
+     * Check login attempts status
      */
     public function checkLoginStatus(Request $request)
     {

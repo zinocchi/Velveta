@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/Api/PaymentMethodController.php
 
 namespace App\Http\Controllers\Api\User;
 
@@ -21,12 +20,10 @@ class PaymentMethodController extends Controller
                 ->orderBy('display_order')
                 ->get()
                 ->map(function ($method) {
-                    // Decode settings
                     $method->settings = is_string($method->settings)
                         ? json_decode($method->settings)
                         : $method->settings;
 
-                    // Add providers for e-wallet
                     if ($method->code === 'e_wallet') {
                         $method->providers = EWalletProvider::where('is_active', true)
                             ->orderBy('display_order')
@@ -39,7 +36,6 @@ class PaymentMethodController extends Controller
                             });
                     }
 
-                    // Add banks for bank transfer
                     if ($method->code === 'bank_transfer') {
                         $method->banks = Bank::where('is_active', true)
                             ->orderBy('display_order')
@@ -94,7 +90,6 @@ class PaymentMethodController extends Controller
                 ], 400);
             }
 
-            // Validate based on method
             switch ($request->method) {
                 case 'credit_card':
                     $request->validate([
@@ -104,7 +99,6 @@ class PaymentMethodController extends Controller
                         'details.cvv' => 'required|string|size:3'
                     ]);
 
-                    // Simple Luhn algorithm check
                     $cardNumber = str_replace(' ', '', $request->details['card_number']);
                     if (!$this->validateLuhn($cardNumber)) {
                         return response()->json([
@@ -120,7 +114,6 @@ class PaymentMethodController extends Controller
                         'details.phone' => 'required|string|regex:/^08[0-9]{8,11}$/'
                     ]);
 
-                    // Check if provider exists and is active
                     $provider = EWalletProvider::where('code', strtolower($request->details['provider']))
                         ->where('is_active', true)
                         ->first();
@@ -159,7 +152,6 @@ class PaymentMethodController extends Controller
                     'valid' => true
                 ]
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -213,12 +205,12 @@ class PaymentMethodController extends Controller
                 ], 404);
             }
 
-            // Decode settings
+
             $method->settings = is_string($method->settings)
                 ? json_decode($method->settings)
                 : $method->settings;
 
-            // Load related data
+
             if ($method->code === 'e_wallet') {
                 $method->providers = EWalletProvider::where('is_active', true)
                     ->orderBy('display_order')
@@ -235,7 +227,6 @@ class PaymentMethodController extends Controller
                 'success' => true,
                 'data' => $method
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

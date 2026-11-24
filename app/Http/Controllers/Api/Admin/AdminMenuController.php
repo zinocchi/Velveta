@@ -109,6 +109,11 @@ class AdminMenuController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Log untuk debugging
+        Log::info('Update method: ' . $request->method());
+        Log::info('Update request all: ', $request->all());
+        Log::info('Has file: ' . ($request->hasFile('image') ? 'Yes' : 'No'));
+
         $request->validate([
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
@@ -116,22 +121,25 @@ class AdminMenuController extends Controller
             'category' => 'sometimes|string|max:100',
             'stock' => 'sometimes|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'is_available' => 'boolean'
+            'is_available' => 'nullable|in:true,false,0,1'
         ]);
 
         try {
             $menu = Menu::findOrFail($id);
-            $data = $request->except('image');
+            $data = $request->except(['image', '_method']);
 
-            // Handle image upload
             if ($request->hasFile('image')) {
-                // Delete old image
                 if ($menu->image) {
                     Storage::disk('public')->delete($menu->image);
                 }
 
                 $imagePath = $request->file('image')->store('menus', 'public');
                 $data['image'] = $imagePath;
+                Log::info('Image uploaded: ' . $imagePath);
+            }
+
+            if ($request->has('is_available')) {
+                $data['is_available'] = filter_var($request->is_available, FILTER_VALIDATE_BOOLEAN);
             }
 
             $menu->update($data);
@@ -139,61 +147,13 @@ class AdminMenuController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Menu updated successfully',
-                'data' => $menu
+                'data' => $menu->fresh()
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to update menu: ' . $e->getMessage());
+            Log::error('Update error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update menu'
-            ], 500);
-        }
-    }
-
-    /**
-     * Update menu stock only
-     */
-    public function updateStock(Request $request, $id)
-    {
-        $request->validate([
-            'stock' => 'required|integer|min:0',
-            'operation' => 'sometimes|in:set,add,subtract'
-        ]);
-
-        try {
-            $menu = Menu::findOrFail($id);
-            $operation = $request->get('operation', 'set');
-
-            switch ($operation) {
-                case 'add':
-                    $menu->stock += $request->stock;
-                    break;
-                case 'subtract':
-                    $menu->stock = max(0, $menu->stock - $request->stock);
-                    break;
-                case 'set':
-                default:
-                    $menu->stock = $request->stock;
-                    break;
-            }
-
-            $menu->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Stock updated successfully',
-                'data' => [
-                    'menu_id' => $menu->id,
-                    'menu_name' => $menu->name,
-                    'old_stock' => $menu->getOriginal('stock'),
-                    'new_stock' => $menu->stock
-                ]
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to update stock: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update stock'
+                'message' => 'Failed to update menu: ' . $e->getMessage()
             ], 500);
         }
     }

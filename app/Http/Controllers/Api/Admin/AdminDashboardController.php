@@ -69,15 +69,13 @@ class AdminDashboardController extends Controller
                 ],
             ];
 
-            // Get recent orders - handle potential missing columns
             $recentOrders = Order::with('user')
                 ->latest()
                 ->limit(10)
                 ->get();
 
-            // If order_number column doesn't exist, use id instead
             if ($recentOrders->isNotEmpty()) {
-                $recentOrders = $recentOrders->map(function($order) {
+                $recentOrders = $recentOrders->map(function ($order) {
                     if (!isset($order->order_number)) {
                         $order->order_number = 'ORD-' . str_pad($order->id, 6, '0', STR_PAD_LEFT);
                     }
@@ -85,7 +83,6 @@ class AdminDashboardController extends Controller
                 });
             }
 
-            // Get popular menus - handle when order_items table is empty
             $popularMenus = [];
             try {
                 $popularMenus = DB::table('order_items')
@@ -100,7 +97,6 @@ class AdminDashboardController extends Controller
                 $popularMenus = collect([]);
             }
 
-            // Revenue chart data
             $revenueChart = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = now()->subDays($i)->format('Y-m-d');
@@ -163,10 +159,10 @@ class AdminDashboardController extends Controller
             switch ($groupBy) {
                 case 'week':
                     $revenueData = $query->get()
-                        ->groupBy(function($date) {
+                        ->groupBy(function ($date) {
                             return $date->created_at->format('W-Y');
                         })
-                        ->map(function($group) {
+                        ->map(function ($group) {
                             return [
                                 'period' => $group->first()->created_at->format('d M') . ' - ' . $group->last()->created_at->format('d M'),
                                 'revenue' => $group->sum('total_price'),
@@ -177,10 +173,10 @@ class AdminDashboardController extends Controller
 
                 case 'month':
                     $revenueData = $query->get()
-                        ->groupBy(function($date) {
+                        ->groupBy(function ($date) {
                             return $date->created_at->format('M Y');
                         })
-                        ->map(function($group) {
+                        ->map(function ($group) {
                             return [
                                 'period' => $group->first()->created_at->format('F Y'),
                                 'revenue' => $group->sum('total_price'),
@@ -192,10 +188,10 @@ class AdminDashboardController extends Controller
                 case 'day':
                 default:
                     $revenueData = $query->get()
-                        ->groupBy(function($date) {
+                        ->groupBy(function ($date) {
                             return $date->created_at->format('Y-m-d');
                         })
-                        ->map(function($group) {
+                        ->map(function ($group) {
                             return [
                                 'date' => $group->first()->created_at->format('d M'),
                                 'revenue' => $group->sum('total_price'),
